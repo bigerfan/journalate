@@ -17,13 +17,10 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import {
-  makeTradeFormSchema,
-  type Settings,
-  type TradeFormValues,
-} from "../types";
+import { makeTradeFormSchema, type TradeFormValues } from "../schema";
+import type { Settings } from "@/features/settings/types";
 import { riskAmount, rewardRisk, suggestedSize } from "../calc";
-import { tradeRepo } from "@/features/shared/storage";
+import { tradeRepo } from "@/features/trade/repo";
 
 type NumericField = "entry" | "stop" | "target" | "size" | "riskPct" | "fees";
 
@@ -55,7 +52,7 @@ export default function TradeForm({
     () =>
       new Intl.NumberFormat(undefined, {
         style: "currency",
-        currency: settings.currency,
+        currency: settings.currency !== "USDT" ? settings.currency : "USD",
         maximumFractionDigits: 2,
       }),
     [settings.currency],
