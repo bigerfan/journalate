@@ -11,6 +11,7 @@ export type Trade = {
   riskPct: number; // planned risk % of equity at open
   riskAmount: number; // size * |entry - stop|, stored so R-multiples never drift
   fees: number;
+  imageUrl?: string;
   strategy?: string;
   timeframe?: string;
   notes?: string;

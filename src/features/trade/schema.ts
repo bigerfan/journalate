@@ -18,6 +18,7 @@ export const makeTradeFormSchema = (maxRiskPct: number) =>
         .number({ message: "Enter the risk %" })
         .positive("Must be above 0")
         .max(maxRiskPct, `Your max risk per trade is ${maxRiskPct}%`),
+      imageUrl: z.url().optional(),
       fees: z.number().min(0, "Cannot be negative").optional(),
       strategy: z.string().optional(),
       timeframe: z.string().optional(),

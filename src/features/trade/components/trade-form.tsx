@@ -105,6 +105,7 @@ export default function TradeForm({
       target: v.target,
       size: v.size,
       riskPct: v.riskPct,
+      imageUrl: v.imageUrl,
       riskAmount: riskAmount(v.size, v.entry, v.stop),
       fees: v.fees ?? 0,
       strategy: v.strategy?.trim() || undefined,
@@ -233,6 +234,14 @@ export default function TradeForm({
                 )}
               />
             )}
+          />
+          <TextField
+            label="screenshot url(optional)"
+            placeholder="https://..."
+            {...(() => {
+              const { ref, ...rest } = register("imageUrl");
+              return { ...rest, inputRef: ref };
+            })()}
           />
           <TextField
             label="Timeframe"

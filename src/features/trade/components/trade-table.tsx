@@ -30,6 +30,7 @@ import {
 import type { Close, Trade } from "../types";
 import { getCurrencyFormatter } from "@/features/shared/utils";
 import { Currency } from "@/features/settings/schema";
+import { LinkOffOutlined, LinkOutlined } from "@mui/icons-material";
 
 type Props = {
   trades: Trade[];
@@ -105,6 +106,7 @@ export default function TradeTable({
             <TableCell align="right">R:R</TableCell>
             <TableCell align="right">Realized P&amp;L</TableCell>
             <TableCell>Strategy</TableCell>
+            <TableCell>Screenshot</TableCell>
             <TableCell>Status</TableCell>
             <TableCell align="right" />
           </TableRow>
@@ -199,6 +201,17 @@ export default function TradeTable({
                   )}
                 </TableCell>
                 <TableCell>{t.strategy ?? "—"}</TableCell>
+                <TableCell>
+                  {t.imageUrl ? (
+                    <Button component={Link} href={t.imageUrl} target="blank">
+                      <LinkOutlined />
+                    </Button>
+                  ) : (
+                    <Button disabled>
+                      <LinkOffOutlined />
+                    </Button>
+                  )}
+                </TableCell>
                 <TableCell>
                   <Chip
                     size="small"
