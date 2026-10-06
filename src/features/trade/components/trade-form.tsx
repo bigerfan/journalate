@@ -18,22 +18,15 @@ import {
   Typography,
 } from "@mui/material";
 import { makeTradeFormSchema, type TradeFormValues } from "../schema";
-import type { Settings } from "@/features/settings/types";
+import type { Currency, Settings } from "@/features/settings/schema";
 import { riskAmount, rewardRisk, suggestedSize } from "../calc";
-import { tradeRepo } from "@/features/trade/repo";
-import { getCurrencyFormatter } from "@/features/shared/utils";
-import { Currency } from "@/features/settings/schema";
+import { tradeRepo } from "../repo";
+import { getCurrencyFormatter, localNow } from "@/features/shared/utils";
 
 type NumericField = "entry" | "stop" | "target" | "size" | "riskPct" | "fees";
 
 // Empty input -> undefined so optional fields stay optional and required ones show their message.
 const toNum = (v: unknown) => (v === "" || v == null ? undefined : Number(v));
-
-const localNow = () => {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 16); // value format for <input type="datetime-local">
-};
 
 const isNum = (n: unknown): n is number =>
   typeof n === "number" && Number.isFinite(n);
@@ -335,15 +328,15 @@ function Row({
   return (
     <Stack
       direction="row"
-      sx={{ justifyContent: "space-between", alignItems: "baseline" }}
+      sx={{ alignItems: "baseline", justifyContent: "space-between" }}
     >
       <Typography variant="body2" color="text.secondary">
         {label}
       </Typography>
       <Typography
         variant="body1"
-        color={warn ? "warning.main" : "text.primary"}
         sx={{ fontWeight: 600 }}
+        color={warn ? "warning.main" : "text.primary"}
       >
         {value}
       </Typography>

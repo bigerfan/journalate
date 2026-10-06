@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -11,60 +11,77 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { currentEquity, settingsRepo } from "@/features/settings/repo";
-import type { Settings } from "@/features/settings/schema";
-import { tradeRepo } from "@/features/trade/repo";
-import type { Trade } from "@/features/trade/types";
+import { settingsRepo } from "@/features/settings/repo";
+import type { Currency, Settings } from "@/features/settings/schema";
+import { groupByTrade, remainingRisk, statusOf } from "@/features/trade/derive";
+import { closeRepo, currentEquity, tradeRepo } from "@/features/trade/repo";
+import type { Close, Trade } from "@/features/trade/types";
 import TradeTable from "@/features/trade/components/trade-table";
+import CloseTradeDialog from "@/features/trade/components/trade-close-modal";
 import { TradeDeleteModal } from "@/features/trade/components/trade-delete-modal";
+import { getCurrencyFormatter } from "@/features/shared/utils";
 
-type State = { settings: Settings; equity: number; trades: Trade[] };
+type State = {
+  settings: Settings;
+  equity: number;
+  trades: Trade[];
+  closesByTrade: Map<string, Close[]>;
+};
 
 export default function DashboardView() {
   const router = useRouter();
   const [state, setState] = useState<State | null>(null);
+  const [closing, setClosing] = useState<Trade | null>(null);
   const [deleteModal, setDeleteModal] = useState<{
     open: boolean;
     trade: null | Trade;
   }>({ open: false, trade: null });
 
-  useEffect(() => {
-    (async () => {
-      const settings = await settingsRepo.get();
-      if (!settings) {
-        router.replace("/onboarding");
-        return;
-      }
-      const [equity, trades] = await Promise.all([
-        currentEquity(settings),
-        tradeRepo.list(),
-      ]);
-      setState({ settings, equity, trades });
-    })();
+  const load = useCallback(async () => {
+    const settings = await settingsRepo.get();
+    if (!settings) {
+      router.replace("/onboarding");
+      return;
+    }
+    const [equity, trades, closes] = await Promise.all([
+      currentEquity(settings),
+      tradeRepo.list(),
+      closeRepo.list(),
+    ]);
+    setState({ settings, equity, trades, closesByTrade: groupByTrade(closes) });
   }, [router]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load();
+  }, [load]);
 
   const handleDeleteConfirmation = (trade: Trade) => {
     setDeleteModal({ open: true, trade });
   };
+
+  // Deleting a trade also deletes its closes, so equity can change: reload everything.
   const handleDelete = async (id: string) => {
     await tradeRepo.remove(id);
-    setState((s) =>
-      s ? { ...s, trades: s.trades.filter((t) => t.id !== id) } : s,
-    );
+    setDeleteModal({ open: false, trade: null });
+    await load();
   };
 
   const summary = useMemo(() => {
     if (!state) return "";
-    const { trades, equity, settings } = state;
+    const { trades, closesByTrade, equity, settings } = state;
     if (trades.length === 0) return "";
-    const risk = trades.reduce((sum, t) => sum + t.riskAmount, 0);
-    const fmt = new Intl.NumberFormat(undefined, {
-      style: "currency",
-      currency: settings.currency !== "USDT" ? settings.currency : "USD",
-    });
+    const fmt = getCurrencyFormatter(settings.currency as Currency);
+    const open = trades.filter(
+      (t) => statusOf(closesByTrade.get(t.id) ?? []) !== "closed",
+    );
+    const risk = open.reduce(
+      (sum, t) => sum + remainingRisk(t, closesByTrade.get(t.id) ?? []),
+      0,
+    );
     const pct =
       equity > 0 ? ` (${((risk / equity) * 100).toFixed(2)}% of account)` : "";
-    return `${trades.length} open ${trades.length === 1 ? "trade" : "trades"} · ${fmt.format(risk)} at risk${pct}`;
+    return `Equity ${fmt.format(equity)} · ${open.length} open · ${fmt.format(risk)} at risk${pct}`;
   }, [state]);
 
   return (
@@ -94,10 +111,11 @@ export default function DashboardView() {
         {state ? (
           <TradeTable
             trades={state.trades}
+            closesByTrade={state.closesByTrade}
             currency={state.settings.currency}
             equity={state.equity}
             onDelete={handleDeleteConfirmation}
-            // onClose={handleClose}
+            onClose={setClosing}
           />
         ) : (
           <Box sx={{ display: "grid", placeItems: "center", py: 10 }}>
@@ -105,6 +123,21 @@ export default function DashboardView() {
           </Box>
         )}
       </Container>
+
+      {state && closing && (
+        <CloseTradeDialog
+          key={closing.id}
+          trade={closing}
+          closes={state.closesByTrade.get(closing.id) ?? []}
+          currency={state.settings.currency}
+          onCancel={() => setClosing(null)}
+          onSaved={async () => {
+            setClosing(null);
+            await load();
+          }}
+        />
+      )}
+
       <TradeDeleteModal
         open={deleteModal.open}
         trade={deleteModal.trade}

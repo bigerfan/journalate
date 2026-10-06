@@ -11,3 +11,10 @@ export const getCurrencyFormatter = (
     ...options,
   });
 };
+
+// Current local time in the format <input type="datetime-local"> expects.
+export const localNow = () => {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+};

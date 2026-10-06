@@ -19,20 +19,39 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Link from "next/link";
 import { rewardRisk } from "../calc";
-import type { Trade } from "../types";
+import {
+  closedPct,
+  realizedPnl,
+  remainingSize,
+  rMultiple,
+  statusOf,
+  type TradeStatus,
+} from "../derive";
+import type { Close, Trade } from "../types";
 import { getCurrencyFormatter } from "@/features/shared/utils";
 import { Currency } from "@/features/settings/schema";
 
 type Props = {
   trades: Trade[];
+  closesByTrade: Map<string, Close[]>;
   currency: string;
   equity: number;
   onDelete: (trade: Trade) => void;
-  onClose?: (trade: Trade) => void; // wired up when the close flow exists
+  onClose: (trade: Trade) => void;
+};
+
+const STATUS: Record<
+  TradeStatus,
+  { label: string; color: "info" | "warning" | "default" }
+> = {
+  open: { label: "Open", color: "info" },
+  partial: { label: "Partial", color: "warning" },
+  closed: { label: "Closed", color: "default" },
 };
 
 export default function TradeTable({
   trades,
+  closesByTrade,
   currency,
   equity,
   onDelete,
@@ -73,7 +92,7 @@ export default function TradeTable({
 
   return (
     <TableContainer component={Paper} variant="outlined">
-      <Table size="small" sx={{ minWidth: 900 }}>
+      <Table size="small" sx={{ minWidth: 1100 }}>
         <TableHead>
           <TableRow>
             <TableCell>Opened</TableCell>
@@ -81,9 +100,10 @@ export default function TradeTable({
             <TableCell align="right">Entry</TableCell>
             <TableCell align="right">Stop</TableCell>
             <TableCell align="right">Target</TableCell>
-            <TableCell align="right">Size</TableCell>
+            <TableCell align="right">Size left</TableCell>
             <TableCell align="right">Risk</TableCell>
             <TableCell align="right">R:R</TableCell>
+            <TableCell align="right">Realized P&amp;L</TableCell>
             <TableCell>Strategy</TableCell>
             <TableCell>Status</TableCell>
             <TableCell align="right" />
@@ -91,11 +111,19 @@ export default function TradeTable({
         </TableHead>
         <TableBody>
           {trades.map((t) => {
+            const closes = closesByTrade.get(t.id) ?? [];
+            const status = statusOf(closes);
             const rr = rewardRisk(t.side, t.entry, t.stop, t.target);
             const riskOfAccount =
               equity > 0 ? (t.riskAmount / equity) * 100 : null;
+            const pnl = closes.length > 0 ? realizedPnl(t, closes) : null;
+            const r = rMultiple(t, closes);
             return (
-              <TableRow key={t.id} hover>
+              <TableRow
+                key={t.id}
+                hover
+                sx={{ opacity: status === "closed" ? 0.75 : 1 }}
+              >
                 <TableCell sx={{ whiteSpace: "nowrap" }}>
                   {date.format(new Date(t.openedAt))}
                 </TableCell>
@@ -115,7 +143,21 @@ export default function TradeTable({
                 <TableCell align="right">
                   {t.target !== undefined ? price.format(t.target) : "—"}
                 </TableCell>
-                <TableCell align="right">{price.format(t.size)}</TableCell>
+                <TableCell align="right">
+                  {status === "closed"
+                    ? "—"
+                    : price.format(remainingSize(t, closes))}
+                  {status === "partial" && (
+                    <Typography
+                      component="span"
+                      variant="caption"
+                      color="text.secondary"
+                    >
+                      {" "}
+                      of {price.format(t.size)}
+                    </Typography>
+                  )}
+                </TableCell>
                 <TableCell align="right">
                   {money.format(t.riskAmount)}
                   {riskOfAccount !== null && (
@@ -132,23 +174,51 @@ export default function TradeTable({
                 <TableCell align="right">
                   {rr !== null ? `${rr.toFixed(2)}R` : "—"}
                 </TableCell>
+                <TableCell align="right">
+                  {pnl === null ? (
+                    "—"
+                  ) : (
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color={pnl >= 0 ? "success.main" : "error.main"}
+                      sx={{ fontWeight: 600 }}
+                    >
+                      {money.format(pnl)}
+                      {r !== null && (
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color="text.secondary"
+                        >
+                          {" "}
+                          ({r.toFixed(2)}R)
+                        </Typography>
+                      )}
+                    </Typography>
+                  )}
+                </TableCell>
                 <TableCell>{t.strategy ?? "—"}</TableCell>
                 <TableCell>
-                  <Chip size="small" label="Open" color="info" />
+                  <Chip
+                    size="small"
+                    color={STATUS[status].color}
+                    label={
+                      status === "partial"
+                        ? `Partial · ${closedPct(closes).toFixed(0)}% closed`
+                        : STATUS[status].label
+                    }
+                  />
                 </TableCell>
                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                  <Tooltip title={onClose ? "" : "Close flow coming next"}>
-                    <span>
-                      <Button
-                        size="small"
-                        disabled={!onClose}
-                        onClick={() => onClose?.(t)}
-                      >
-                        Close
-                      </Button>
-                    </span>
-                  </Tooltip>
-                  <Tooltip title="Delete">
+                  <Button
+                    size="small"
+                    disabled={status === "closed"}
+                    onClick={() => onClose(t)}
+                  >
+                    Close
+                  </Button>
+                  <Tooltip title="Delete trade">
                     <IconButton
                       size="small"
                       aria-label={`Delete ${t.pair} trade`}

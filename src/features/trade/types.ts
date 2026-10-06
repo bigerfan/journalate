@@ -1,8 +1,5 @@
-import { z } from "zod";
-
 export type Side = "long" | "short";
 
-// ---------- Trade (what we store) ----------
 export type Trade = {
   id: string;
   pair: string;
@@ -21,4 +18,23 @@ export type Trade = {
   createdAt: string;
   updatedAt: string;
 };
+
 export type NewTrade = Omit<Trade, "id" | "createdAt" | "updatedAt">;
+
+export type CloseReason = "stop" | "target" | "manual";
+
+// One exit (full or partial). A trade's status, remaining size and P&L are derived from its closes.
+export type Close = {
+  id: string;
+  tradeId: string;
+  percent: number; // % of the ORIGINAL position closed by this exit
+  price: number;
+  reason: CloseReason;
+  fees: number;
+  mistake?: string;
+  note?: string;
+  closedAt: string; // ISO
+  createdAt: string;
+};
+
+export type NewClose = Omit<Close, "id" | "createdAt">;

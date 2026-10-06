@@ -1,6 +1,4 @@
-// ---------- Open-trade form ----------
-
-import z from "zod";
+import { z } from "zod";
 
 // A factory because the max risk comes from the user's settings.
 export const makeTradeFormSchema = (maxRiskPct: number) =>
@@ -52,3 +50,40 @@ export const makeTradeFormSchema = (maxRiskPct: number) =>
     });
 
 export type TradeFormValues = z.infer<ReturnType<typeof makeTradeFormSchema>>;
+
+// ---------- Close form ----------
+export const MISTAKES = [
+  "FOMO",
+  "Moved stop",
+  "Closed early",
+  "Held too long",
+  "Oversized",
+  "Broke my plan",
+] as const;
+
+export const makeCloseFormSchema = (openedAt: string) =>
+  z
+    .object({
+      // % of the REMAINING position; the dialog converts it to % of the original when saving
+      percent: z
+        .number({ message: "Enter how much to close" })
+        .positive("Must be above 0")
+        .max(100, "Cannot exceed 100% of the remaining position"),
+      reason: z.enum(["stop", "target", "manual"]),
+      price: z
+        .number({ message: "Enter the exit price" })
+        .positive("Must be above 0"),
+      fees: z.number().min(0, "Cannot be negative").optional(),
+      closedAt: z.string().min(1, "Pick a date"),
+      mistake: z.string().optional(),
+      note: z.string().optional(),
+    })
+    .refine(
+      (v) => new Date(v.closedAt).getTime() >= new Date(openedAt).getTime(),
+      {
+        path: ["closedAt"],
+        message: "Cannot be before the trade was opened",
+      },
+    );
+
+export type CloseFormValues = z.infer<ReturnType<typeof makeCloseFormSchema>>;
