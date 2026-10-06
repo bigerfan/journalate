@@ -16,4 +16,10 @@ export const tradeRepo = {
     write(KEYS.trades, [trade, ...(await this.list())]);
     return trade;
   },
+  async remove(id: string): Promise<void> {
+    write(
+      KEYS.trades,
+      (await this.list()).filter((t) => t.id !== id),
+    );
+  },
 };

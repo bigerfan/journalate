@@ -23,3 +23,4 @@ export const SettingsSchema = z.object({
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
+export type Currency = (typeof CURRENCIES)[number];

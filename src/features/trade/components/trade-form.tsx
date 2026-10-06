@@ -21,6 +21,8 @@ import { makeTradeFormSchema, type TradeFormValues } from "../schema";
 import type { Settings } from "@/features/settings/types";
 import { riskAmount, rewardRisk, suggestedSize } from "../calc";
 import { tradeRepo } from "@/features/trade/repo";
+import { getCurrencyFormatter } from "@/features/shared/utils";
+import { Currency } from "@/features/settings/schema";
 
 type NumericField = "entry" | "stop" | "target" | "size" | "riskPct" | "fees";
 
@@ -50,9 +52,7 @@ export default function TradeForm({
   );
   const money = useMemo(
     () =>
-      new Intl.NumberFormat(undefined, {
-        style: "currency",
-        currency: settings.currency !== "USDT" ? settings.currency : "USD",
+      getCurrencyFormatter(settings.currency as Currency, {
         maximumFractionDigits: 2,
       }),
     [settings.currency],
