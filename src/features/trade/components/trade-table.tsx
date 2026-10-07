@@ -28,7 +28,7 @@ import {
   type TradeStatus,
 } from "../derive";
 import type { Close, Trade } from "../types";
-import { getCurrencyFormatter } from "@/features/shared/utils";
+import { getCurrencyFormatter } from "@/features/shared/format";
 import { Currency } from "@/features/settings/schema";
 import { LinkOffOutlined, LinkOutlined } from "@mui/icons-material";
 

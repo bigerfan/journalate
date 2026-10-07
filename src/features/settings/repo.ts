@@ -1,19 +1,12 @@
-import { KEYS, read, write } from "../shared/local-storage";
-import { Settings, SettingsSchema } from "./types";
+import { api } from "@/features/shared/api";
+import type { Settings } from "./schema";
 
-// Every method is async so swapping in an API-backed repo later changes nothing in the UI.
+// Same method names as the localStorage version, so OnboardingForm and the pages don't change.
 export const settingsRepo = {
-  async get(): Promise<Settings | null> {
-    const parsed = SettingsSchema.safeParse(read(KEYS.settings));
-    return parsed.success ? parsed.data : null;
-  },
-  async save(settings: Settings): Promise<void> {
-    write(KEYS.settings, SettingsSchema.parse(settings));
-  },
+  get: () => api<Settings | null>("/api/settings"), // null until onboarding is done
+  save: (settings: Settings) =>
+    api<Settings>("/api/settings", {
+      method: "PUT",
+      body: JSON.stringify(settings),
+    }),
 };
-
-// Equity = starting balance + realized P&L. Closes don't exist yet, so for now it's just the
-// starting balance. Replace the body once the close flow is built.
-export async function currentEquity(settings: Settings): Promise<number> {
-  return settings.startingBalance;
-}

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, RegisterOptions, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Alert,
@@ -21,9 +21,8 @@ import { makeTradeFormSchema, type TradeFormValues } from "../schema";
 import type { Currency, Settings } from "@/features/settings/schema";
 import { riskAmount, rewardRisk, suggestedSize } from "../calc";
 import { tradeRepo } from "../repo";
-import { getCurrencyFormatter, localNow } from "@/features/shared/utils";
-
-type NumericField = "entry" | "stop" | "target" | "size" | "riskPct" | "fees";
+import { getCurrencyFormatter, localNow } from "@/features/shared/format";
+import { makeFieldProps } from "@/features/shared/form";
 
 // Empty input -> undefined so optional fields stay optional and required ones show their message.
 const toNum = (v: unknown) => (v === "" || v == null ? undefined : Number(v));
@@ -84,19 +83,10 @@ export default function TradeForm({
   const overRisk = isNum(riskPct) && plannedRiskPct > riskPct + 1e-9;
 
   // Spread helper: MUI TextField needs the RHF ref on the input element, not the root.
-  const num = (name: NumericField) => {
-    const { ref, ...rest } = register(name, { setValueAs: toNum });
-    return {
-      ...rest,
-      inputRef: ref,
-      type: "number",
-      slotProps: { htmlInput: { step: "any" } },
-      error: !!errors[name],
-      helperText: errors[name]?.message,
-    };
-  };
+  const field = makeFieldProps(register, errors);
 
   const onSubmit = async (v: TradeFormValues) => {
+    console.log(v);
     await tradeRepo.create({
       pair: v.pair.trim().toUpperCase(),
       side: v.side,
@@ -136,12 +126,7 @@ export default function TradeForm({
             placeholder="BTCUSDT"
             autoFocus
             fullWidth
-            error={!!errors.pair}
-            helperText={errors.pair?.message}
-            {...(() => {
-              const { ref, ...rest } = register("pair");
-              return { ...rest, inputRef: ref };
-            })()}
+            {...field("pair")}
           />
           <Controller
             name="side"
@@ -172,9 +157,18 @@ export default function TradeForm({
             gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
           }}
         >
-          <TextField label="Entry price" {...num("entry")} />
-          <TextField label="Stop loss" {...num("stop")} />
-          <TextField label="Take profit (optional)" {...num("target")} />
+          <TextField
+            label="Entry price"
+            {...field("entry", "number", { register: { setValueAs: toNum } })}
+          />
+          <TextField
+            label="Stop loss"
+            {...field("stop", "number", { register: { setValueAs: toNum } })}
+          />
+          <TextField
+            label="Take profit (optional)"
+            {...field("target", "number", { register: { setValueAs: toNum } })}
+          />
         </Box>
 
         <Box
@@ -184,9 +178,16 @@ export default function TradeForm({
             gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
           }}
         >
-          <TextField label="Risk per trade (%)" {...num("riskPct")} />
+          <TextField
+            label="Risk per trade (%)"
+            {...field("riskPct", "number", { register: { setValueAs: toNum } })}
+          />
           <Box>
-            <TextField label="Position size" fullWidth {...num("size")} />
+            <TextField
+              label="Position size"
+              fullWidth
+              {...field("size", "number", { register: { setValueAs: toNum } })}
+            />
             <Button
               size="small"
               disabled={suggested <= 0}
@@ -238,46 +239,27 @@ export default function TradeForm({
           <TextField
             label="screenshot url(optional)"
             placeholder="https://..."
-            {...(() => {
-              const { ref, ...rest } = register("imageUrl");
-              return { ...rest, inputRef: ref };
-            })()}
+            {...field("imageUrl")}
           />
           <TextField
             label="Timeframe"
             placeholder="4h"
-            {...(() => {
-              const { ref, ...rest } = register("timeframe");
-              return { ...rest, inputRef: ref };
-            })()}
+            {...field("timeframe")}
           />
-          <TextField
-            label="Opened"
-            type="datetime-local"
-            slotProps={{ inputLabel: { shrink: true } }}
-            error={!!errors.openedAt}
-            helperText={errors.openedAt?.message}
-            {...(() => {
-              const { ref, ...rest } = register("openedAt");
-              return { ...rest, inputRef: ref };
-            })()}
-          />
+          <TextField label="Opened" {...field("openedAt", "datetime-local")} />
         </Box>
 
         <TextField
           label={`Entry fees (${settings.currency})`}
           sx={{ maxWidth: 240 }}
-          {...num("fees")}
+          {...field("fees", "number", { register: { setValueAs: toNum } })}
         />
 
         <TextField
           label="Why are you taking this trade?"
           multiline
           minRows={3}
-          {...(() => {
-            const { ref, ...rest } = register("notes");
-            return { ...rest, inputRef: ref };
-          })()}
+          {...field("notes")}
         />
       </Stack>
 

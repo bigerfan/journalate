@@ -34,6 +34,7 @@ export type Close = {
   fees: number;
   mistake?: string;
   note?: string;
+  imageUrl?: string;
   closedAt: string; // ISO
   createdAt: string;
 };

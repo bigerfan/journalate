@@ -19,12 +19,13 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import { getCurrencyFormatter, localNow } from "@/features/shared/utils";
+import { getCurrencyFormatter, localNow } from "@/features/shared/format";
 import { closePnl, remainingPct } from "../derive";
 import { closeRepo } from "../repo";
 import { makeCloseFormSchema, MISTAKES, type CloseFormValues } from "../schema";
 import type { Close, Trade } from "../types";
 import { Currency } from "@/features/settings/schema";
+import { makeFieldProps } from "@/features/shared/form";
 
 type Props = {
   trade: Trade;
@@ -101,20 +102,7 @@ export default function CloseTradeDialog({
   const r = pnl !== null && sliceRisk > 0 ? pnl / sliceRisk : null;
   const remainingAfter = Math.max(0, remaining - sliceOfOriginal);
 
-  const num = (
-    name: "percent" | "price" | "fees",
-    extra?: { readOnly?: boolean },
-  ) => {
-    const { ref, ...rest } = register(name, { setValueAs: toNum });
-    return {
-      ...rest,
-      inputRef: ref,
-      type: "number",
-      slotProps: { htmlInput: { step: "any", readOnly: extra?.readOnly } },
-      error: !!errors[name],
-      helperText: errors[name]?.message,
-    };
-  };
+  const field = makeFieldProps(register, errors);
 
   const onSubmit = async (v: CloseFormValues) => {
     try {
@@ -154,7 +142,9 @@ export default function CloseTradeDialog({
                 label="Amount to close (% of remaining)"
                 fullWidth
                 autoFocus
-                {...num("percent")}
+                {...field("percent", "number", {
+                  register: { setValueAs: toNum },
+                })}
               />
               <Stack
                 direction="row"
@@ -222,7 +212,10 @@ export default function CloseTradeDialog({
               <TextField
                 label="Price"
                 fullWidth
-                {...num("price", { readOnly: reason !== "manual" })}
+                {...field("price", "number", {
+                  register: { setValueAs: toNum },
+                  readOnly: reason !== "manual",
+                })}
               />
             </Box>
 
@@ -233,17 +226,15 @@ export default function CloseTradeDialog({
                 gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
               }}
             >
-              <TextField label={`Exit fees (${currency})`} {...num("fees")} />
+              <TextField
+                label={`Exit fees (${currency})`}
+                {...field("fees", "number", {
+                  register: { setValueAs: toNum },
+                })}
+              />
               <TextField
                 label="Closed at"
-                type="datetime-local"
-                slotProps={{ inputLabel: { shrink: true } }}
-                error={!!errors.closedAt}
-                helperText={errors.closedAt?.message}
-                {...(() => {
-                  const { ref, ...rest } = register("closedAt");
-                  return { ...rest, inputRef: ref };
-                })()}
+                {...field("closedAt", "datetime-local")}
               />
             </Box>
 
@@ -266,10 +257,7 @@ export default function CloseTradeDialog({
               label="Note (optional)"
               multiline
               minRows={2}
-              {...(() => {
-                const { ref, ...rest } = register("note");
-                return { ...rest, inputRef: ref };
-              })()}
+              {...field("note")}
             />
 
             <Box

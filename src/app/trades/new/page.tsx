@@ -4,15 +4,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import TradeForm from "@/features/trade/components/trade-form";
-import { currentEquity, settingsRepo } from "@/features/settings/repo";
+import { settingsRepo } from "@/features/settings/repo";
 import type { Settings } from "@/features/settings/types";
+import { getCurrencyFormatter } from "@/features/shared/format";
+import { Currency } from "@/features/settings/schema";
 
 export default function NewTradePage() {
   const router = useRouter();
   const [state, setState] = useState<{
     settings: Settings;
-    equity: number;
+    equity: string;
   } | null>(null);
+
+  console.log(state);
 
   // localStorage only exists in the browser, so load inside an effect to avoid hydration mismatches.
   useEffect(() => {
@@ -22,7 +26,10 @@ export default function NewTradePage() {
         router.replace("/onboarding"); // not built yet
         return;
       }
-      setState({ settings, equity: await currentEquity(settings) });
+      setState({
+        settings,
+        equity: settings.currency,
+      });
     })();
   }, [router]);
 
@@ -37,7 +44,10 @@ export default function NewTradePage() {
       </Typography>
 
       {state ? (
-        <TradeForm settings={state.settings} equity={state.equity} />
+        <TradeForm
+          settings={state.settings}
+          equity={Number(state.settings.startingBalance)}
+        />
       ) : (
         <Box sx={{ display: "grid", placeItems: "center", py: 10 }}>
           <CircularProgress />
