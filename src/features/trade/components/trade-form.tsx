@@ -24,9 +24,6 @@ import { tradeRepo } from "../repo";
 import { getCurrencyFormatter, localNow } from "@/features/shared/format";
 import { makeFieldProps } from "@/features/shared/form";
 
-// Empty input -> undefined so optional fields stay optional and required ones show their message.
-const toNum = (v: unknown) => (v === "" || v == null ? undefined : Number(v));
-
 const isNum = (n: unknown): n is number =>
   typeof n === "number" && Number.isFinite(n);
 
@@ -157,17 +154,11 @@ export default function TradeForm({
             gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
           }}
         >
-          <TextField
-            label="Entry price"
-            {...field("entry", "number", { register: { setValueAs: toNum } })}
-          />
-          <TextField
-            label="Stop loss"
-            {...field("stop", "number", { register: { setValueAs: toNum } })}
-          />
+          <TextField label="Entry price" {...field("entry", "number")} />
+          <TextField label="Stop loss" {...field("stop", "number")} />
           <TextField
             label="Take profit (optional)"
-            {...field("target", "number", { register: { setValueAs: toNum } })}
+            {...field("target", "number")}
           />
         </Box>
 
@@ -180,13 +171,13 @@ export default function TradeForm({
         >
           <TextField
             label="Risk per trade (%)"
-            {...field("riskPct", "number", { register: { setValueAs: toNum } })}
+            {...field("riskPct", "number")}
           />
           <Box>
             <TextField
               label="Position size"
               fullWidth
-              {...field("size", "number", { register: { setValueAs: toNum } })}
+              {...field("size", "number")}
             />
             <Button
               size="small"
@@ -252,7 +243,7 @@ export default function TradeForm({
         <TextField
           label={`Entry fees (${settings.currency})`}
           sx={{ maxWidth: 240 }}
-          {...field("fees", "number", { register: { setValueAs: toNum } })}
+          {...field("fees", "number")}
         />
 
         <TextField

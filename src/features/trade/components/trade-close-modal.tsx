@@ -35,7 +35,6 @@ type Props = {
   onSaved: () => void;
 };
 
-const toNum = (v: unknown) => (v === "" || v == null ? undefined : Number(v));
 const isNum = (n: unknown): n is number =>
   typeof n === "number" && Number.isFinite(n);
 
@@ -142,9 +141,7 @@ export default function CloseTradeDialog({
                 label="Amount to close (% of remaining)"
                 fullWidth
                 autoFocus
-                {...field("percent", "number", {
-                  register: { setValueAs: toNum },
-                })}
+                {...field("percent", "number")}
               />
               <Stack
                 direction="row"
@@ -213,7 +210,6 @@ export default function CloseTradeDialog({
                 label="Price"
                 fullWidth
                 {...field("price", "number", {
-                  register: { setValueAs: toNum },
                   readOnly: reason !== "manual",
                 })}
               />
@@ -228,9 +224,7 @@ export default function CloseTradeDialog({
             >
               <TextField
                 label={`Exit fees (${currency})`}
-                {...field("fees", "number", {
-                  register: { setValueAs: toNum },
-                })}
+                {...field("fees", "number")}
               />
               <TextField
                 label="Closed at"
