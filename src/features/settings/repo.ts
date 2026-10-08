@@ -1,4 +1,4 @@
-import { api } from "@/features/shared/api";
+import { api } from "@/lib/api";
 import type { Settings } from "./schema";
 
 // Same method names as the localStorage version, so OnboardingForm and the pages don't change.

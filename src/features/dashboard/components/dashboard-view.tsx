@@ -19,7 +19,7 @@ import type { Close, Trade } from "@/features/trade/types";
 import TradeTable from "@/features/trade/components/trade-table";
 import CloseTradeDialog from "@/features/trade/components/trade-close-modal";
 import { TradeDeleteModal } from "@/features/trade/components/trade-delete-modal";
-import { getCurrencyFormatter } from "@/features/shared/format";
+import { getCurrencyFormatter } from "@/lib/format";
 
 type State = {
   settings: Settings;

@@ -6,7 +6,7 @@ import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import TradeForm from "@/features/trade/components/trade-form";
 import { settingsRepo } from "@/features/settings/repo";
 import type { Settings } from "@/features/settings/types";
-import { getCurrencyFormatter } from "@/features/shared/format";
+import { getCurrencyFormatter } from "@/lib/format";
 import { Currency } from "@/features/settings/schema";
 
 export default function NewTradePage() {

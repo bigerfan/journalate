@@ -1,5 +1,5 @@
-import { prisma } from "@/db/prisma";
-import { HttpError } from "@/features/shared/server/http";
+import { prisma } from "@/lib/prisma";
+import { HttpError } from "@/lib/http";
 import type { Settings } from "../schema";
 import { toSettings } from "./mappers";
 import type { UpsertSettingsInput } from "./schema";

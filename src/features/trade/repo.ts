@@ -1,4 +1,4 @@
-import { api } from "@/features/shared/api";
+import { api } from "@/lib/api";
 import type { Settings } from "@/features/settings/schema";
 import { groupByTrade, realizedPnl } from "./derive";
 import type { Close, NewClose, NewTrade, Trade } from "./types";

@@ -1,4 +1,4 @@
-import { Currency } from "../settings/schema";
+import { Currency } from "../features/settings/schema";
 
 export const getCurrencyFormatter = (
   currency: Currency,

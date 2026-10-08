@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { route } from "@/features/shared/server/http";
+import { route } from "@/lib/http";
 import { CreateCloseSchema, IdSchema } from "@/features/trade/server/schema";
 import { createClose } from "@/features/trade/server/service";
 

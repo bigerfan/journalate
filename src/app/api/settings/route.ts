@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { route } from "@/features/shared/server/http";
+import { route } from "@/lib/http";
 import { UpsertSettingsSchema } from "@/features/settings/server/schema";
 import { getSettings, saveSettings } from "@/features/settings/server/service";
 
