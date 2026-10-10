@@ -3,21 +3,21 @@ import { HttpError } from "@/lib/http";
 import type { Settings } from "../schema";
 import { toSettings } from "./mappers";
 import type { UpsertSettingsInput } from "./schema";
-
-const SETTINGS_ID = 1; // single-user app: there is exactly one settings row (enforced by a CHECK)
+import { auth, requireUser, SessionUser } from "@/lib/auth";
 
 /** The settings row, or null before onboarding is finished. */
-export async function getSettings(): Promise<Settings | null> {
-  const row = await prisma.settings.findUnique({ where: { id: SETTINGS_ID } });
+export async function getSettings(user: SessionUser): Promise<Settings | null> {
+  const row = await prisma.settings.findUnique({ where: { userId: user.id } });
   return row ? toSettings(row) : null;
 }
 
 /** Creates the row on first save (onboarding), updates it afterwards. */
 export async function saveSettings(
+  user: SessionUser,
   input: UpsertSettingsInput,
 ): Promise<Settings> {
   const existing = await prisma.settings.findUnique({
-    where: { id: SETTINGS_ID },
+    where: { userId: user.id },
   });
 
   // Amounts are stored without a currency, so changing it later would silently relabel old trades.
@@ -33,8 +33,8 @@ export async function saveSettings(
   }
 
   const row = await prisma.settings.upsert({
-    where: { id: SETTINGS_ID },
-    create: { id: SETTINGS_ID, ...input },
+    where: { userId: user.id },
+    create: { userId: user.id, ...input },
     update: input,
   });
   return toSettings(row);
