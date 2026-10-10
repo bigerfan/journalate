@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 
 const Page = async () => {
   const session = await getUserSession();
-  if (session) redirect("/");
+  if (session) redirect("/dashbaord");
   return (
     <Box
       sx={{

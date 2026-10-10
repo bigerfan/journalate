@@ -10,8 +10,10 @@ import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import Link from "next/link";
 import { showError } from "@/components/toast/show-error";
+import { useRouter } from "next/navigation";
 
 export function SignupForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -34,6 +36,7 @@ export function SignupForm() {
       name: data.name,
       password: data.password,
     });
+    if (authData?.user) router.replace("/dashboard");
     if (error?.message) showError(error, error.message);
 
     console.log(authData);

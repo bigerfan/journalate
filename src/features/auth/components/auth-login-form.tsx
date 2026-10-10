@@ -8,8 +8,10 @@ import { makeFieldProps } from "@/lib/form";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { showError } from "@/components/toast/show-error";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -25,13 +27,14 @@ export function LoginForm() {
   const field = makeFieldProps(register, errors);
 
   const onSubmit = async (data: LoginFormValues) => {
-    const { data: AuthData, error } = await authClient.signIn.email({
+    const { data: authData, error } = await authClient.signIn.email({
       email: data.email,
       password: data.password,
     });
+    if (authData?.user) router.replace("/dashboard");
     if (error?.message) showError(error, error.message);
 
-    console.log(AuthData);
+    console.log(authData);
     console.log(error);
   };
 
