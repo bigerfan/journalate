@@ -6,6 +6,7 @@ import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import OnboardingForm from "@/features/settings/components/onboarding-form";
 import { settingsRepo } from "@/features/settings/repo";
 import type { Settings } from "@/features/settings/schema";
+import { showError } from "@/components/toast/show-error";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -13,10 +14,14 @@ export default function OnboardingPage() {
   const [initial, setInitial] = useState<Settings | null>(null);
 
   useEffect(() => {
-    settingsRepo.get().then((s) => {
-      setInitial(s);
-      setLoaded(true);
-    });
+    try {
+      settingsRepo.get().then((s) => {
+        setInitial(s);
+        setLoaded(true);
+      });
+    } catch (error) {
+      showError(error);
+    }
   }, []);
 
   return (

@@ -6,8 +6,9 @@ import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import TradeForm from "@/features/trade/components/trade-form";
 import { settingsRepo } from "@/features/settings/repo";
 import type { Settings } from "@/features/settings/types";
-import { getCurrencyFormatter } from "@/features/shared/format";
+import { getCurrencyFormatter } from "@/lib/format";
 import { Currency } from "@/features/settings/schema";
+import { showError } from "@/components/toast/show-error";
 
 export default function NewTradePage() {
   const router = useRouter();
@@ -21,15 +22,20 @@ export default function NewTradePage() {
   // localStorage only exists in the browser, so load inside an effect to avoid hydration mismatches.
   useEffect(() => {
     (async () => {
-      const settings = await settingsRepo.get();
-      if (!settings) {
-        router.replace("/onboarding"); // not built yet
-        return;
+      try {
+        const settings = await settingsRepo.get();
+        if (!settings) {
+          router.replace("/onboarding"); // not built yet
+          return;
+        }
+        setState({
+          settings,
+          equity: settings.currency,
+        });
+      } catch (error) {
+        console.log(error);
+        showError(error, "setting not found");
       }
-      setState({
-        settings,
-        equity: settings.currency,
-      });
     })();
   }, [router]);
 

@@ -1,15 +1,21 @@
-import { prisma } from "@/db/prisma";
-import { HttpError } from "@/features/shared/server/http";
+import { prisma } from "@/lib/prisma";
+import { HttpError } from "@/lib/http";
 import { toClose, toTrade } from "./mappers";
 import type { CreateCloseInput, CreateTradeInput } from "./schema";
+import { SessionUser } from "@/lib/auth";
 
-export async function listTrades() {
-  const rows = await prisma.trade.findMany({ orderBy: { openedAt: "desc" } });
+export async function listTrades(user: SessionUser) {
+  const rows = await prisma.trade.findMany({
+    orderBy: { openedAt: "desc" },
+    where: { userId: user.id },
+  });
   return rows.map(toTrade);
 }
 
-export async function createTrade(input: CreateTradeInput) {
-  const settings = await prisma.settings.findUnique({ where: { id: 1 } });
+export async function createTrade(user: SessionUser, input: CreateTradeInput) {
+  const settings = await prisma.settings.findUnique({
+    where: { userId: user.id },
+  });
   if (!settings)
     throw new HttpError(409, "Finish onboarding before logging trades.");
   if (input.riskPct > settings.maxRiskPct.toNumber()) {
@@ -19,21 +25,32 @@ export async function createTrade(input: CreateTradeInput) {
     );
   }
   const riskAmount = input.size * Math.abs(input.entry - input.stop);
-  const row = await prisma.trade.create({ data: { ...input, riskAmount } });
+  const row = await prisma.trade.create({
+    data: { ...input, riskAmount, userId: user.id },
+  });
   return toTrade(row);
 }
 
-export async function deleteTrade(id: string) {
-  const { count } = await prisma.trade.deleteMany({ where: { id } });
+export async function deleteTrade(user: SessionUser, id: string) {
+  const { count } = await prisma.trade.deleteMany({
+    where: { id, userId: user.id },
+  });
   if (count === 0) throw new HttpError(404, "Trade not found.");
 }
 
-export async function listCloses() {
-  const rows = await prisma.close.findMany({ orderBy: { closedAt: "asc" } });
+export async function listCloses(user: SessionUser) {
+  const rows = await prisma.close.findMany({
+    orderBy: { closedAt: "asc" },
+    where: { userId: user.id },
+  });
   return rows.map(toClose);
 }
 
-export async function createClose(tradeId: string, input: CreateCloseInput) {
+export async function createClose(
+  user: SessionUser,
+  tradeId: string,
+  input: CreateCloseInput,
+) {
   const row = await prisma.$transaction(async (tx) => {
     // Lock the trade row so two simultaneous closes can't both pass the 100% check.
     const locked = await tx.$queryRaw<{ opened_at: Date }[]>`
@@ -53,7 +70,7 @@ export async function createClose(tradeId: string, input: CreateCloseInput) {
         `Only ${(100 - used).toFixed(2)}% of this position is still open.`,
       );
     }
-    return tx.close.create({ data: { ...input, tradeId } });
+    return tx.close.create({ data: { ...input, tradeId, userId: user.id } });
   });
   return toClose(row);
 }

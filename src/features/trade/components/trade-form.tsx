@@ -21,8 +21,8 @@ import { makeTradeFormSchema, type TradeFormValues } from "../schema";
 import type { Currency, Settings } from "@/features/settings/schema";
 import { riskAmount, rewardRisk, suggestedSize } from "../calc";
 import { tradeRepo } from "../repo";
-import { getCurrencyFormatter, localNow } from "@/features/shared/format";
-import { makeFieldProps } from "@/features/shared/form";
+import { getCurrencyFormatter, localNow } from "@/lib/format";
+import { makeFieldProps } from "@/lib/form";
 
 const isNum = (n: unknown): n is number =>
   typeof n === "number" && Number.isFinite(n);

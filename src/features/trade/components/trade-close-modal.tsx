@@ -19,13 +19,13 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import { getCurrencyFormatter, localNow } from "@/features/shared/format";
+import { getCurrencyFormatter, localNow } from "@/lib/format";
 import { closePnl, remainingPct } from "../derive";
 import { closeRepo } from "../repo";
 import { makeCloseFormSchema, MISTAKES, type CloseFormValues } from "../schema";
 import type { Close, Trade } from "../types";
 import { Currency } from "@/features/settings/schema";
-import { makeFieldProps } from "@/features/shared/form";
+import { makeFieldProps } from "@/lib/form";
 
 type Props = {
   trade: Trade;

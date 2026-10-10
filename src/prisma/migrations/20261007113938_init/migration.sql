@@ -66,7 +66,6 @@ CREATE INDEX "closes_trade_id_idx" ON "closes"("trade_id");
 ALTER TABLE "closes" ADD CONSTRAINT "closes_trade_id_fkey" FOREIGN KEY ("trade_id") REFERENCES "trades"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE settings
-  ADD CONSTRAINT settings_single_row CHECK (id = 1),
   ADD CONSTRAINT settings_balance_positive CHECK (starting_balance > 0),
   ADD CONSTRAINT settings_risk_range CHECK (max_risk_pct > 0 AND max_risk_pct <= 100);
 
