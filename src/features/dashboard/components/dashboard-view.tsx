@@ -20,6 +20,9 @@ import TradeTable from "@/features/trade/components/trade-table";
 import CloseTradeDialog from "@/features/trade/components/trade-close-modal";
 import { TradeDeleteModal } from "@/features/trade/components/trade-delete-modal";
 import { getCurrencyFormatter } from "@/lib/format";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { showError } from "@/components/toast/show-error";
 
 type State = {
   settings: Settings;
@@ -38,17 +41,26 @@ export default function DashboardView() {
   }>({ open: false, trade: null });
 
   const load = useCallback(async () => {
-    const settings = await settingsRepo.get();
-    if (!settings) {
-      router.replace("/onboarding");
-      return;
+    try {
+      const settings = await settingsRepo.get();
+      if (!settings) {
+        router.replace("/onboarding");
+        return;
+      }
+      const [equity, trades, closes] = await Promise.all([
+        currentEquity(settings),
+        tradeRepo.list(),
+        closeRepo.list(),
+      ]);
+      setState({
+        settings,
+        equity,
+        trades,
+        closesByTrade: groupByTrade(closes),
+      });
+    } catch (error) {
+      showError(error, "setting not found");
     }
-    const [equity, trades, closes] = await Promise.all([
-      currentEquity(settings),
-      tradeRepo.list(),
-      closeRepo.list(),
-    ]);
-    setState({ settings, equity, trades, closesByTrade: groupByTrade(closes) });
   }, [router]);
 
   useEffect(() => {
@@ -105,6 +117,13 @@ export default function DashboardView() {
           </Box>
           <Button component={Link} href="/trades/new" variant="contained">
             New trade
+          </Button>
+          <Button
+            onClick={async () => {
+              await authClient.signOut();
+            }}
+          >
+            signout
           </Button>
         </Stack>
 

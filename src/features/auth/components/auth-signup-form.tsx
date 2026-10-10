@@ -9,6 +9,7 @@ import { makeFieldProps } from "@/lib/form";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import Link from "next/link";
+import { showError } from "@/components/toast/show-error";
 
 export function SignupForm() {
   const {
@@ -33,9 +34,10 @@ export function SignupForm() {
       name: data.name,
       password: data.password,
     });
+    if (error?.message) showError(error, error.message);
+
     console.log(authData);
     console.log(error);
-    if (error?.message) alert(error.message);
     // else router.replace("/");
   };
 

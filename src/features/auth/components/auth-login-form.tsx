@@ -7,6 +7,7 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { makeFieldProps } from "@/lib/form";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { showError } from "@/components/toast/show-error";
 
 export function LoginForm() {
   const {
@@ -28,6 +29,7 @@ export function LoginForm() {
       email: data.email,
       password: data.password,
     });
+    if (error?.message) showError(error, error.message);
 
     console.log(AuthData);
     console.log(error);
