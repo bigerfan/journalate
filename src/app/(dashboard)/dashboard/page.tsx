@@ -1,9 +1,5 @@
-import DashboardView from "@/features/dashboard/components/dashboard-view";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { Box } from "@mui/material";
 
 export default async function HomePage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  console.log(session);
-  return <DashboardView />;
+  return <Box>coming soon</Box>;
 }
