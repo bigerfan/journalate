@@ -2,14 +2,12 @@
 import { createTheme } from "@mui/material/styles";
 import { palette } from "./palette";
 import { typography } from "./typography";
-import { MuiButton } from "./components/button";
+import * as components from "./components/index";
 
 const theme = createTheme({
   palette,
   typography,
-  components: {
-    MuiButton,
-  },
+  components,
   shape: {
     borderRadius: 8,
   },
