@@ -1,64 +1,19 @@
-"use client";
+import { getSettings } from "@/features/settings/server/service";
+import NewTradeView from "@/features/trade/components/new-trade-view";
+import { currentEquity } from "@/features/trade/derive";
+import { listCloses, listTrades } from "@/features/trade/server/service";
+import { auth, getUserSession } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Box, CircularProgress, Container, Typography } from "@mui/material";
-import TradeForm from "@/features/trade/components/trade-form";
-import { settingsRepo } from "@/features/settings/repo";
-import type { Settings } from "@/features/settings/types";
-import { getCurrencyFormatter } from "@/lib/format";
-import { Currency } from "@/features/settings/schema";
-import { showError } from "@/components/toast/show-error";
+export default async function NewTradePage() {
+  const session = await getUserSession();
+  const settings = await getSettings(session.user);
+  if (!settings) redirect("/onboarding");
 
-export default function NewTradePage() {
-  const router = useRouter();
-  const [state, setState] = useState<{
-    settings: Settings;
-    equity: string;
-  } | null>(null);
-
-  console.log(state);
-
-  // localStorage only exists in the browser, so load inside an effect to avoid hydration mismatches.
-  useEffect(() => {
-    (async () => {
-      try {
-        const settings = await settingsRepo.get();
-        if (!settings) {
-          router.replace("/onboarding"); // not built yet
-          return;
-        }
-        setState({
-          settings,
-          equity: settings.currency,
-        });
-      } catch (error) {
-        console.log(error);
-        showError(error, "setting not found");
-      }
-    })();
-  }, [router]);
-
-  return (
-    <Container maxWidth="lg" sx={{ py: 5 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        New trade
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 4 }}>
-        Enter your entry and stop, and the size is calculated from your risk
-        limit.
-      </Typography>
-
-      {state ? (
-        <TradeForm
-          settings={state.settings}
-          equity={Number(state.settings.startingBalance)}
-        />
-      ) : (
-        <Box sx={{ display: "grid", placeItems: "center", py: 10 }}>
-          <CircularProgress />
-        </Box>
-      )}
-    </Container>
-  );
+  // calculate equity
+  const trades = await listTrades(session.user);
+  const closes = await listCloses(session.user);
+  const equity = currentEquity(settings, trades, closes);
+  return <NewTradeView initialData={{ settings, equity }} />;
 }

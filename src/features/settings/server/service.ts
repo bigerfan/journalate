@@ -4,10 +4,12 @@ import type { Settings } from "../schema";
 import { toSettings } from "./mappers";
 import type { UpsertSettingsInput } from "./schema";
 import { auth, requireUser, SessionUser } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 /** The settings row, or null before onboarding is finished. */
 export async function getSettings(user: SessionUser): Promise<Settings | null> {
   const row = await prisma.settings.findUnique({ where: { userId: user.id } });
+  if (!row) NextResponse.redirect("/onboarding");
   return row ? toSettings(row) : null;
 }
 

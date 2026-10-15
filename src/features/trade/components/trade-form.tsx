@@ -100,7 +100,7 @@ export default function TradeForm({
       notes: v.notes?.trim() || undefined,
       openedAt: new Date(v.openedAt).toISOString(),
     });
-    router.push("/");
+    router.push("/trades");
   };
 
   return (

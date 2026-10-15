@@ -5,6 +5,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import { AppToaster } from "@/components/toast/app-toast";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,13 +26,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body>
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <AppToaster />
-            {children}
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <Providers>
+          <AppRouterCacheProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <AppToaster />
+              {children}
+            </ThemeProvider>
+          </AppRouterCacheProvider>
+        </Providers>
       </body>
     </html>
   );

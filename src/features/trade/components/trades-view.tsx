@@ -17,8 +17,13 @@ import {
 
 import { settingsRepo } from "@/features/settings/repo";
 import type { Currency, Settings } from "@/features/settings/schema";
-import { groupByTrade, remainingRisk, statusOf } from "@/features/trade/derive";
-import { closeRepo, currentEquity, tradeRepo } from "@/features/trade/repo";
+import {
+  currentEquity,
+  groupByTrade,
+  remainingRisk,
+  statusOf,
+} from "@/features/trade/derive";
+import { closeRepo, tradeRepo } from "@/features/trade/repo";
 import type { Close, Trade } from "@/features/trade/types";
 import TradeTable from "@/features/trade/components/trade-table";
 import CloseTradeDialog from "@/features/trade/components/trade-close-modal";
@@ -26,18 +31,54 @@ import { TradeDeleteModal } from "@/features/trade/components/trade-delete-modal
 import { getCurrencyFormatter } from "@/lib/format";
 import { authClient } from "@/lib/auth-client";
 import { showError } from "@/components/toast/show-error";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type State = {
   settings: Settings;
   equity: number;
-  trades: Trade[];
   closesByTrade: Map<string, Close[]>;
 };
 
-export default function TradesView() {
-  const router = useRouter();
+export type TradesPageData = {
+  settings: Settings;
+  equity: number;
+  trades: Trade[];
+  closes: Close[];
+};
 
-  const [state, setState] = useState<State | null>(null);
+export default function TradesView({
+  initialData,
+}: {
+  initialData: TradesPageData;
+}) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const { data: trades } = useQuery({
+    queryKey: ["trades"],
+    queryFn: tradeRepo.list,
+    initialData: initialData.trades,
+  });
+
+  const { data: closes } = useQuery({
+    queryKey: ["closes"],
+    queryFn: closeRepo.list,
+    initialData: initialData.closes,
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: settingsRepo.get,
+    initialData: initialData.settings,
+  });
+
+  const closesByTrade = useMemo(() => groupByTrade(closes), [closes]);
+
+  const equity = useMemo(
+    () => (settings ? currentEquity(settings, trades, closes) : 0),
+    [settings, trades, closes],
+  );
+
   const [closing, setClosing] = useState<Trade | null>(null);
 
   const [deleteModal, setDeleteModal] = useState<{
@@ -45,36 +86,9 @@ export default function TradesView() {
     trade: Trade | null;
   }>({ open: false, trade: null });
 
-  const load = useCallback(async () => {
-    try {
-      const settings = await settingsRepo.get();
-
-      if (!settings) {
-        router.replace("/onboarding");
-        return;
-      }
-
-      const [equity, trades, closes] = await Promise.all([
-        currentEquity(settings),
-        tradeRepo.list(),
-        closeRepo.list(),
-      ]);
-
-      setState({
-        settings,
-        equity,
-        trades,
-        closesByTrade: groupByTrade(closes),
-      });
-    } catch (error) {
-      showError(error, "Settings not found");
-    }
-  }, [router]);
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    load();
-  }, [load]);
+    if (!settings) router.replace("/onboarding");
+  }, [settings]);
 
   const handleDeleteConfirmation = (trade: Trade) => {
     setDeleteModal({ open: true, trade });
@@ -83,17 +97,21 @@ export default function TradesView() {
   const handleDelete = async (id: string) => {
     try {
       await tradeRepo.remove(id);
+
       setDeleteModal({ open: false, trade: null });
-      await load();
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["trades"] }),
+        queryClient.invalidateQueries({ queryKey: ["closes"] }),
+      ]);
     } catch (error) {
       showError(error, "Could not delete trade");
     }
   };
 
   const summary = useMemo(() => {
-    if (!state) return null;
+    if (!settings) return null;
 
-    const { trades, closesByTrade, equity, settings } = state;
     const fmt = getCurrencyFormatter(settings.currency as Currency);
 
     const openTrades = trades.filter(
@@ -115,7 +133,7 @@ export default function TradesView() {
       riskPercentage: `${riskPercentage.toFixed(2)}%`,
       currency: settings.currency,
     };
-  }, [state]);
+  }, [settings, trades, closesByTrade, equity]);
 
   return (
     <Box
@@ -180,7 +198,7 @@ export default function TradesView() {
         </Stack>
 
         {/* Account summary */}
-        {state && summary && (
+        {summary && (
           <Grid container spacing={2} sx={{ mb: 4 }}>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <SummaryCard
@@ -244,16 +262,16 @@ export default function TradesView() {
               </Typography>
             </Box>
 
-            {state && (
+            {
               <Chip
-                label={`${state.trades.length} total ${
-                  state.trades.length === 1 ? "trade" : "trades"
+                label={`${trades.length} total ${
+                  trades.length === 1 ? "trade" : "trades"
                 }`}
                 variant="outlined"
                 size="small"
                 sx={{ borderRadius: 1.5 }}
               />
-            )}
+            }
           </Stack>
 
           <Box
@@ -264,12 +282,12 @@ export default function TradesView() {
               overflowX: "auto",
             }}
           >
-            {state ? (
+            {trades && closes && settings ? (
               <TradeTable
-                trades={state.trades}
-                closesByTrade={state.closesByTrade}
-                currency={state.settings.currency}
-                equity={state.equity}
+                trades={trades}
+                closesByTrade={closesByTrade}
+                currency={settings.currency}
+                equity={equity}
                 onDelete={handleDeleteConfirmation}
                 onClose={setClosing}
               />
@@ -292,16 +310,17 @@ export default function TradesView() {
         </Paper>
 
         {/* Close trade dialog */}
-        {state && closing && (
+        {closing && (
           <CloseTradeDialog
             key={closing.id}
             trade={closing}
-            closes={state.closesByTrade.get(closing.id) ?? []}
-            currency={state.settings.currency}
+            closes={closesByTrade.get(closing.id) ?? []}
+            currency={settings.currency}
             onCancel={() => setClosing(null)}
-            onSaved={async () => {
+            onSaved={() => {
               setClosing(null);
-              await load();
+              queryClient.invalidateQueries({ queryKey: ["trades"] });
+              queryClient.invalidateQueries({ queryKey: ["closes"] });
             }}
           />
         )}

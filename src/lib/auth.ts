@@ -4,6 +4,7 @@ import { nextCookies } from "better-auth/next-js";
 import { prisma } from "./prisma";
 import { HttpError, route } from "./http";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export type SessionUser = NonNullable<
   Awaited<ReturnType<typeof auth.api.getSession>>
@@ -26,6 +27,7 @@ export async function requireUser() {
 
 export const getUserSession = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/auth/signup");
   return session;
 };
 

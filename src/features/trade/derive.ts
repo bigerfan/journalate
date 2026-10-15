@@ -1,3 +1,4 @@
+import { Settings } from "../settings/schema";
 import type { Close, Trade } from "./types";
 
 const EPS = 1e-8;
@@ -51,4 +52,18 @@ export function rMultiple(trade: Trade, closes: Close[]): number | null {
   return (
     realizedPnl(trade, closes) / ((trade.riskAmount * closedPct(closes)) / 100)
   );
+}
+
+// Still computed in the browser from the full lists. Move to SQL when the stats get heavy.
+export function currentEquity(
+  settings: Settings,
+  trades: Trade[],
+  closes: Close[],
+): number {
+  const byTrade = groupByTrade(closes);
+  const pnl = trades.reduce(
+    (sum, t) => sum + realizedPnl(t, byTrade.get(t.id) ?? []),
+    0,
+  );
+  return settings.startingBalance + pnl;
 }
