@@ -36,6 +36,7 @@ export function DashboardHeader({ onMenuClick }: Props) {
         borderBottom: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",
+        display: { md: "none", xs: "block" },
       }}
     >
       <Toolbar sx={{ minHeight: "64px !important", gap: 2 }}>
