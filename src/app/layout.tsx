@@ -6,6 +6,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import { AppToaster } from "@/components/toast/app-toast";
 import Providers from "./providers";
+import { ProgressBar } from "@/components/progress-bar/progress-bar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Providers>
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
+              <ProgressBar />
               <CssBaseline />
               <AppToaster />
               {children}
