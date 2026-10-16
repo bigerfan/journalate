@@ -20,7 +20,7 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { LinkOffOutlined, LinkOutlined } from "@mui/icons-material";
 
-import { rewardRisk } from "../../trade/calc";
+import { rewardRisk } from "../calc";
 import {
   closedPct,
   realizedPnl,
@@ -28,8 +28,8 @@ import {
   rMultiple,
   statusOf,
   type TradeStatus,
-} from "../../trade/derive";
-import type { Close, Trade } from "../../trade/types";
+} from "../derive";
+import type { Close, Trade } from "../types";
 import { getCurrencyFormatter } from "@/lib/format";
 import type { Currency } from "@/features/settings/schema";
 
@@ -387,7 +387,7 @@ export default function TradeTable({
                           color: "text.secondary",
                           "&:hover": {
                             color: "error.main",
-                            bgcolor: "error.lighter",
+                            // bgcolor: "action.hover",
                           },
                         }}
                       >

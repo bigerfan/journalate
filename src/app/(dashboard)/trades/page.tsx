@@ -1,4 +1,4 @@
-import TradesView from "@/features/dashboard/components/trades-view";
+import TradesView from "@/features/trade/components/trades-view";
 import { getSettings } from "@/features/settings/server/service";
 import { currentEquity } from "@/features/trade/derive";
 import { listCloses, listTrades } from "@/features/trade/server/service";

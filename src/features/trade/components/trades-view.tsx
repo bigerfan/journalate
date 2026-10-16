@@ -25,13 +25,14 @@ import {
 } from "@/features/trade/derive";
 import { closeRepo, tradeRepo } from "@/features/trade/repo";
 import type { Close, Trade } from "@/features/trade/types";
-import TradeTable from "@/features/dashboard/components/trade-table";
+import TradeTable from "@/features/trade/components/trade-table";
 import CloseTradeDialog from "@/features/trade/components/trade-close-modal";
 import { TradeDeleteModal } from "@/features/trade/components/trade-delete-modal";
 import { getCurrencyFormatter } from "@/lib/format";
 import { authClient } from "@/lib/auth-client";
 import { showError } from "@/components/toast/show-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import SummaryCard from "@/components/card/summary-card";
 
 type State = {
   settings: Settings;
@@ -335,58 +336,5 @@ export default function TradesView({
         />
       </Container>
     </Box>
-  );
-}
-
-type SummaryCardProps = {
-  label: string;
-  value: string;
-  description: string;
-};
-
-function SummaryCard({ label, value, description }: SummaryCardProps) {
-  return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 2.5,
-        height: "100%",
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 3,
-        transition: "border-color 160ms ease",
-        "&:hover": {
-          borderColor: "text.secondary",
-        },
-      }}
-    >
-      <Typography
-        variant="body2"
-        sx={{ color: "text.secondary", fontWeight: 500 }}
-      >
-        {label}
-      </Typography>
-
-      <Typography
-        variant="h5"
-        sx={{
-          mt: 1.5,
-          overflowWrap: "anywhere",
-
-          fontWeight: 750,
-          letterSpacing: "-0.035em",
-        }}
-      >
-        {value}
-      </Typography>
-
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        sx={{ display: "block", mt: 1 }}
-      >
-        {description}
-      </Typography>
-    </Paper>
   );
 }

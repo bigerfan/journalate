@@ -1,18 +1,18 @@
 import { Paper, Stack, Typography } from "@mui/material";
 
-type StatCardProps = {
+type SummaryCardProps = {
   label: string;
   value: string;
   description?: string;
   valueColor?: string;
 };
 
-export default function StatCard({
+export default function SummaryCard({
   label,
   value,
   description,
   valueColor,
-}: StatCardProps) {
+}: SummaryCardProps) {
   return (
     <Paper variant="outlined" sx={{ p: 2.5, height: "100%", borderRadius: 2 }}>
       <Stack spacing={1}>

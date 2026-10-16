@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { Close, Trade } from "@/features/trade/types";
 import { computeStats } from "@/features/trade/stats";
-import StatCard from "@/components/dashboard/stat-card";
+import StatCard from "@/components/card/summary-card";
 import EquityCurveChart from "./equity-curve-chart";
 import PerformanceSummary from "./performance-summary";
 import RecentClosesTable from "./recent-closes-table";
