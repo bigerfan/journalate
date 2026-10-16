@@ -56,7 +56,7 @@ export function rMultiple(trade: Trade, closes: Close[]): number | null {
 
 // Still computed in the browser from the full lists. Move to SQL when the stats get heavy.
 export function currentEquity(
-  settings: Settings,
+  startingBalance: number,
   trades: Trade[],
   closes: Close[],
 ): number {
@@ -65,5 +65,5 @@ export function currentEquity(
     (sum, t) => sum + realizedPnl(t, byTrade.get(t.id) ?? []),
     0,
   );
-  return settings.startingBalance + pnl;
+  return startingBalance + pnl;
 }

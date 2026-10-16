@@ -14,6 +14,6 @@ export default async function NewTradePage() {
   // calculate equity
   const trades = await listTrades(session.user);
   const closes = await listCloses(session.user);
-  const equity = currentEquity(settings, trades, closes);
+  const equity = currentEquity(settings.startingBalance, trades, closes);
   return <NewTradeView initialData={{ settings, equity }} />;
 }

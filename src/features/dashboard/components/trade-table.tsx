@@ -20,7 +20,7 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { LinkOffOutlined, LinkOutlined } from "@mui/icons-material";
 
-import { rewardRisk } from "../calc";
+import { rewardRisk } from "../../trade/calc";
 import {
   closedPct,
   realizedPnl,
@@ -28,8 +28,8 @@ import {
   rMultiple,
   statusOf,
   type TradeStatus,
-} from "../derive";
-import type { Close, Trade } from "../types";
+} from "../../trade/derive";
+import type { Close, Trade } from "../../trade/types";
 import { getCurrencyFormatter } from "@/lib/format";
 import type { Currency } from "@/features/settings/schema";
 

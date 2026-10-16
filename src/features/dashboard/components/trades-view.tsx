@@ -25,7 +25,7 @@ import {
 } from "@/features/trade/derive";
 import { closeRepo, tradeRepo } from "@/features/trade/repo";
 import type { Close, Trade } from "@/features/trade/types";
-import TradeTable from "@/features/trade/components/trade-table";
+import TradeTable from "@/features/dashboard/components/trade-table";
 import CloseTradeDialog from "@/features/trade/components/trade-close-modal";
 import { TradeDeleteModal } from "@/features/trade/components/trade-delete-modal";
 import { getCurrencyFormatter } from "@/lib/format";
@@ -75,7 +75,8 @@ export default function TradesView({
   const closesByTrade = useMemo(() => groupByTrade(closes), [closes]);
 
   const equity = useMemo(
-    () => (settings ? currentEquity(settings, trades, closes) : 0),
+    () =>
+      settings ? currentEquity(settings.startingBalance, trades, closes) : 0,
     [settings, trades, closes],
   );
 

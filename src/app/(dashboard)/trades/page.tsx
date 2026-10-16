@@ -1,4 +1,4 @@
-import TradesView from "@/features/trade/components/trades-view";
+import TradesView from "@/features/dashboard/components/trades-view";
 import { getSettings } from "@/features/settings/server/service";
 import { currentEquity } from "@/features/trade/derive";
 import { listCloses, listTrades } from "@/features/trade/server/service";
@@ -14,7 +14,7 @@ export default async function HomePage() {
     listTrades(session.user),
     listCloses(session.user),
   ]);
-  const equity = currentEquity(settings, trades, closes);
+  const equity = currentEquity(settings.startingBalance, trades, closes);
 
   return <TradesView initialData={{ trades, closes, settings, equity }} />;
 }
