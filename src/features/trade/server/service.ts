@@ -74,3 +74,18 @@ export async function createClose(
   });
   return toClose(row);
 }
+
+export async function getTradeWithCloses(user: SessionUser, id: string) {
+  const row = await prisma.trade.findFirst({
+    where: { id, userId: user.id }, // the ownership filter, as in every other service
+    include: {
+      closes: { orderBy: [{ closedAt: "asc" }, { createdAt: "asc" }] },
+    },
+  });
+  if (!row) throw new HttpError(404, "cannot find the trade");
+
+  return {
+    trade: toTrade(row),
+    closes: row.closes.map(toClose),
+  };
+}

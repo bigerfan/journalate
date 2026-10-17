@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
+import NextLink from "next/link";
 import {
   Box,
   Button,
@@ -16,6 +16,7 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  Link,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { LinkOffOutlined, LinkOutlined } from "@mui/icons-material";
@@ -126,7 +127,7 @@ export default function TradeTable({
         </Typography>
 
         <Button
-          component={Link}
+          component={NextLink}
           href="/trades/new"
           variant="contained"
           sx={{
@@ -218,7 +219,14 @@ export default function TradeTable({
                 </TableCell>
 
                 <TableCell>
-                  <StackPair pair={t.pair} side={t.side} />
+                  <Link
+                    component={NextLink}
+                    href={`/trades/${t.id}`}
+                    underline="none"
+                    color="inherit"
+                  >
+                    <StackPair pair={t.pair} side={t.side} />
+                  </Link>
                 </TableCell>
 
                 <TableCell align="right">{price.format(t.entry)}</TableCell>

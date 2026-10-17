@@ -67,3 +67,18 @@ export function currentEquity(
   );
   return startingBalance + pnl;
 }
+
+/** Everything the close detail view shows, computed from the same inputs as closePnl. */
+export function closeBreakdown(
+  trade: Trade,
+  c: Pick<Close, "percent" | "price" | "fees">,
+) {
+  const size = (trade.size * c.percent) / 100;
+  const dir = trade.side === "long" ? 1 : -1;
+  const gross = dir * (c.price - trade.entry) * size;
+  const entryFeeShare = (trade.fees * c.percent) / 100;
+  const net = closePnl(trade, c); // single source for the net figure
+  const r =
+    trade.riskAmount > 0 ? net / ((trade.riskAmount * c.percent) / 100) : null;
+  return { size, gross, exitFees: c.fees, entryFeeShare, net, r };
+}

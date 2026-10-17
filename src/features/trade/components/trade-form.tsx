@@ -228,7 +228,7 @@ export default function TradeForm({
             )}
           />
           <TextField
-            label="screenshot url(optional)"
+            label="imageurl(optional)"
             placeholder="https://..."
             {...field("imageUrl")}
           />

@@ -3,8 +3,8 @@
 import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import TradeForm from "@/features/trade/components/trade-form";
 import { settingsRepo } from "@/features/settings/repo";
-import type { Settings } from "@/features/settings/types";
 import { useQuery } from "@tanstack/react-query";
+import { Settings } from "@/features/settings/schema";
 
 type NewTradePage = {
   initialData: {

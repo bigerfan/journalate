@@ -14,7 +14,7 @@ export const SettingsSchema = z.object({
   startingBalance: z
     .number({ message: "Enter your starting balance" })
     .positive("Must be above 0"),
-  currency: z.string().min(1, "Pick a currency"),
+  currency: z.enum(CURRENCIES),
   maxRiskPct: z
     .number({ message: "Enter your max risk per trade" })
     .positive("Must be above 0")

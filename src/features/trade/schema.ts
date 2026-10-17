@@ -81,6 +81,10 @@ export const makeCloseFormSchema = (openedAt: string) =>
       closedAt: z.string().min(1, "Pick a date"),
       mistake: z.string().optional(),
       note: z.string().optional(),
+      imageUrl: z.preprocess(
+        (value: string) => (value === "" ? undefined : value),
+        z.url().optional(),
+      ),
     })
     .refine(
       (v) => new Date(v.closedAt).getTime() >= new Date(openedAt).getTime(),

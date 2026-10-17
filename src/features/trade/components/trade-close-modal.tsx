@@ -114,6 +114,7 @@ export default function CloseTradeDialog({
         mistake: v.mistake || undefined,
         note: v.note?.trim() || undefined,
         closedAt: new Date(v.closedAt).toISOString(),
+        imageUrl: v.imageUrl,
       });
       onSaved();
     } catch (e) {
@@ -245,6 +246,12 @@ export default function CloseTradeDialog({
                   ))}
                 </TextField>
               )}
+            />
+
+            <TextField
+              label="imageurl(optional)"
+              placeholder="https://"
+              {...field("imageUrl")}
             />
 
             <TextField
