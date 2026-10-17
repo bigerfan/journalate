@@ -24,11 +24,11 @@ export const dashboardConfig = {
       href: "/trades",
       icon: ShowChartRoundedIcon,
     },
-    {
-      title: "Trade Closes",
-      href: "/closes",
-      icon: ReceiptLongRoundedIcon,
-    },
+    // {
+    //   title: "Trade Closes",
+    //   href: "/closes",
+    //   icon: ReceiptLongRoundedIcon,
+    // },
     {
       title: "Settings",
       href: "/settings",
