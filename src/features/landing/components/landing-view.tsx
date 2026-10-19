@@ -26,7 +26,7 @@ export default function LandingView() {
           maxWidth="lg"
           sx={{ position: "relative", zIndex: 1, pt: { xs: 2, md: 3 } }}
         >
-          <Stack
+          {/* <Stack
             direction="row"
             sx={{ justifyContent: "space-between", alignItems: "center" }}
           >
@@ -42,7 +42,7 @@ export default function LandingView() {
             <Button component={Link} href="/auth/login" color="inherit">
               Log in
             </Button>
-          </Stack>
+          </Stack> */}
 
           <Box sx={{ pt: { xs: 7, md: 12 }, maxWidth: 680 }}>
             <Typography

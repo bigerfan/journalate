@@ -1,0 +1,44 @@
+"use client";
+
+import Link from "next/link";
+import { Box, Button, Container, Link as MuiLink, Stack } from "@mui/material";
+
+export default function Header() {
+  return (
+    <Box component="header">
+      <Container maxWidth="lg">
+        <Stack
+          direction="row"
+          sx={{
+            height: 64,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <MuiLink
+            component={Link}
+            href="/"
+            underline="none"
+            color="inherit"
+            sx={{
+              fontWeight: 750,
+              letterSpacing: "-0.03em",
+              fontSize: "1.15rem",
+            }}
+          >
+            Journalate
+          </MuiLink>
+
+          <Stack direction="row" sx={{ gap: 1, alignItems: "center" }}>
+            <Button component={Link} href="/auth/login" color="inherit">
+              Log in
+            </Button>
+            <Button component={Link} href="/auth/signup" variant="contained">
+              Sign up
+            </Button>
+          </Stack>
+        </Stack>
+      </Container>
+    </Box>
+  );
+}
