@@ -224,6 +224,7 @@ export default function TradeTable({
                     href={`/trades/${t.id}`}
                     underline="none"
                     color="inherit"
+                    sx={{ fontWeight: 800, color: "primary.main" }}
                   >
                     <StackPair pair={t.pair} side={t.side} />
                   </Link>

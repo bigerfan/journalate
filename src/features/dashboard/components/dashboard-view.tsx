@@ -81,7 +81,8 @@ export default function DashboardView({
         sx={{
           justifyContent: "space-between",
           alignItems: { xs: "stretch", sm: "center" },
-          spacing: 2,
+          // spacing: 2,
+          gap: 2,
         }}
       >
         <Box>

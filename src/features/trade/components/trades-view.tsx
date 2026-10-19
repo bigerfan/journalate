@@ -154,6 +154,7 @@ export default function TradesView({
             justifyContent: "space-between",
             alignItems: { xs: "stretch", sm: "center" },
             spacing: 2,
+            gap: 2,
           }}
         >
           <Box>
@@ -188,14 +189,14 @@ export default function TradesView({
             </Button>
 
             {/* Testing only — intentionally retained */}
-            <Button
+            {/* <Button
               size="large"
               onClick={async () => {
                 await authClient.signOut();
               }}
             >
               signout
-            </Button>
+            </Button> */}
           </Stack>
         </Stack>
 

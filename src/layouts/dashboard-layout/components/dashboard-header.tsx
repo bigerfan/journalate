@@ -54,7 +54,7 @@ export function DashboardHeader({ onMenuClick }: Props) {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Avatar
+        {/* <Avatar
           sx={{
             width: 34,
             height: 34,
@@ -63,7 +63,7 @@ export function DashboardHeader({ onMenuClick }: Props) {
           }}
         >
           U
-        </Avatar>
+        </Avatar> */}
       </Toolbar>
     </AppBar>
   );
