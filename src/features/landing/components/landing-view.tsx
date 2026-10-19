@@ -5,8 +5,9 @@ import { Box, Button, Container, Stack, Typography } from "@mui/material";
 
 import FeatureStrip from "./feature-strip";
 import HeroCurve from "./hero-curve";
+import { User } from "better-auth";
 
-export default function LandingView() {
+export default function LandingView({ user }: { user?: User }) {
   return (
     <Box
       component="main"
@@ -63,28 +64,30 @@ export default function LandingView() {
               Log entries, partial closes and mistakes. See your R and your
               equity as they really are.
             </Typography>
-            <Stack direction="row" sx={{ gap: 1.5, mt: 4, flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/auth/signup"
-                variant="contained"
-                size="large"
-              >
-                Start journaling
-              </Button>
-              <Button
-                component={Link}
-                href="/auth/login"
-                size="large"
-                color="inherit"
-              >
-                Log in
-              </Button>
-            </Stack>
+            {!user && (
+              <Stack direction="row" sx={{ gap: 1.5, mt: 4, flexWrap: "wrap" }}>
+                <Button
+                  component={Link}
+                  href="/auth/signup"
+                  variant="contained"
+                  size="large"
+                >
+                  Start journaling
+                </Button>
+                <Button
+                  component={Link}
+                  href="/auth/login"
+                  size="large"
+                  color="inherit"
+                >
+                  Log in
+                </Button>
+              </Stack>
+            )}
           </Box>
         </Container>
 
-        <Typography
+        {/* <Typography
           variant="caption"
           color="text.disabled"
           sx={{
@@ -95,7 +98,7 @@ export default function LandingView() {
           }}
         >
           Sample data
-        </Typography>
+        </Typography> */}
       </Box>
 
       <FeatureStrip />

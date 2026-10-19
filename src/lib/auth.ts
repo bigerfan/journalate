@@ -5,6 +5,7 @@ import { prisma } from "./prisma";
 import { HttpError, route } from "./http";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { emailVerificationContent, sendEmail } from "./email";
 
 export type SessionUser = NonNullable<
   Awaited<ReturnType<typeof auth.api.getSession>>
@@ -12,7 +13,23 @@ export type SessionUser = NonNullable<
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
-  emailAndPassword: { enabled: true },
+  emailAndPassword: { enabled: true, requireEmailVerification: true },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        ...emailVerificationContent(url),
+      }).catch((err) => console.error("verification email failed", err));
+    },
+    autoSignInAfterVerification: true,
+  },
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
   session: {
     expiresIn: 60 * 60 * 24,
   },

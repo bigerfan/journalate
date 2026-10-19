@@ -36,11 +36,8 @@ export function SignupForm() {
       name: data.name,
       password: data.password,
     });
-    if (authData?.user) router.replace("/dashboard");
     if (error?.message) showError(error, error.message);
-
-    console.log(authData);
-    console.log(error);
+    router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
     // else router.replace("/");
   };
 
