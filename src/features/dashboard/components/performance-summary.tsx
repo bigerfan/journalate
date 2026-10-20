@@ -17,17 +17,17 @@ export default function PerformanceSummary({ stats }: Props) {
   const losses = stats.closedTrades - stats.wins;
 
   const rows = [
-    { label: "Closed trades", value: String(stats.closedTrades) },
-    { label: "Winning trades", value: String(stats.wins) },
-    { label: "Losing trades", value: String(losses) },
-    { label: "Win rate", value: winRate },
-    { label: "Average R", value: avgR },
+    { label: "معاملات بسته‌شده", value: String(stats.closedTrades) },
+    { label: "معاملات سودده", value: String(stats.wins) },
+    { label: "معاملات زیان‌ده", value: String(losses) },
+    { label: "درصد معاملات موفق", value: winRate },
+    { label: "میانگین R", value: avgR },
   ];
 
   return (
     <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
       <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-        Performance summary
+        خلاصه عملکرد
       </Typography>
 
       <Stack divider={<Divider flexItem />} spacing={1.5}>

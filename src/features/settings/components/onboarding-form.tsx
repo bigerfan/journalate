@@ -25,7 +25,7 @@ type Props = {
 
 export default function OnboardingForm({
   initial,
-  submitLabel = "Start journaling",
+  submitLabel = "شروع ثبت معاملات",
   onSaved,
 }: Props) {
   const {
@@ -100,7 +100,7 @@ export default function OnboardingForm({
     >
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <TextField
-          label="Starting balance"
+          label="موجودی اولیه"
           fullWidth
           autoFocus
           {...num("startingBalance")}
@@ -111,7 +111,7 @@ export default function OnboardingForm({
           render={({ field }) => (
             <TextField
               select
-              label="Currency"
+              label="واحد پول"
               sx={{ minWidth: 140 }}
               {...field}
             >
@@ -127,7 +127,7 @@ export default function OnboardingForm({
 
       <div>
         <TextField
-          label="Max risk per trade (%)"
+          label="حداکثر ریسک هر معامله (٪)"
           fullWidth
           {...num("maxRiskPct")}
         />
@@ -137,15 +137,15 @@ export default function OnboardingForm({
           sx={{ mt: 1, minHeight: 20 }}
         >
           {perTrade !== null
-            ? `Risking ${money.format(perTrade)} per trade on a ${money.format(balance)} account.`
+            ? `ریسک هر معامله: ${money.format(perTrade)} از موجودی ${money.format(balance)}`
             : ""}
         </Typography>
       </div>
 
       {valid(riskPct) && riskPct > 5 && (
         <Alert severity="warning">
-          Risking more than 5% per trade can wipe out an account in a short
-          losing streak.
+          ریسک بیشتر از ۵٪ در هر معامله می‌تونه باعث بشه در چند معامله زیان‌ده
+          پشت سر هم، بخش زیادی از موجودیت رو از دست بدی.
         </Alert>
       )}
 
@@ -162,8 +162,8 @@ export default function OnboardingForm({
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Strategies (optional)"
-                helperText="Type a name and press Enter. You can add more later."
+                label="استراتژی‌ها (اختیاری)"
+                helperText="اسم استراتژی رو وارد کن و Enter بزن. بعداً هم می‌تونی موارد بیشتری اضافه کنی."
               />
             )}
           />
@@ -176,7 +176,7 @@ export default function OnboardingForm({
         size="large"
         disabled={isSubmitting}
       >
-        {submitLabel}
+        {isSubmitting ? "در حال ذخیره..." : submitLabel}
       </Button>
     </Stack>
   );

@@ -41,9 +41,9 @@ export default function DashboardView({
 
   const statCards = [
     {
-      label: "Realized P&L",
+      label: "سود و زیان تحقق‌یافته",
       value: `${stats.totalPnl > 0 ? "+" : ""}${money.format(stats.totalPnl)}`,
-      description: "Net of fees",
+      description: "پس از کسر کارمزدها",
       valueColor:
         stats.totalPnl > 0
           ? "success.main"
@@ -52,14 +52,14 @@ export default function DashboardView({
             : undefined,
     },
     {
-      label: "Win rate",
+      label: "درصد معاملات موفق",
       value: winRate,
-      description: `${stats.wins} wins · ${stats.closedTrades} closed trades`,
+      description: `${stats.wins} معامله موفق از ${stats.closedTrades} معامله بسته‌شده`,
     },
     {
-      label: "Average R",
+      label: "میانگین R",
       value: avgR,
-      description: "Closed trades with a valid R multiple",
+      description: "معاملات بسته‌شده با مقدار R معتبر",
       valueColor:
         stats.avgR !== null && stats.avgR !== 0
           ? stats.avgR > 0
@@ -68,9 +68,9 @@ export default function DashboardView({
           : undefined,
     },
     {
-      label: "Total fees",
+      label: "مجموع کارمزدها",
       value: money.format(stats.totalFees),
-      description: "Fees incurred on closes",
+      description: "کارمزد معاملات بسته‌شده",
     },
   ];
 
@@ -87,7 +87,7 @@ export default function DashboardView({
       >
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Dashboard
+            نمای کلی
           </Typography>
 
           <Typography
@@ -97,12 +97,12 @@ export default function DashboardView({
               mt: 0.5,
             }}
           >
-            Your trading performance at a glance.
+            نگاهی سریع به عملکرد معاملاتت.
           </Typography>
         </Box>
 
         <Button variant="contained" href="/trades/new">
-          New Trade
+          ثبت معامله جدید
         </Button>
       </Stack>
 

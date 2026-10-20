@@ -119,7 +119,7 @@ export default function TradeForm({
       <Stack spacing={3}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <TextField
-            label="Pair"
+            label="جفت‌ارز"
             placeholder="BTCUSDT"
             autoFocus
             fullWidth
@@ -133,14 +133,14 @@ export default function TradeForm({
                 exclusive
                 value={field.value}
                 onChange={(_, v) => v && field.onChange(v)}
-                aria-label="Trade side"
+                aria-label="جهت معامله"
                 sx={{ height: 56, flexShrink: 0 }}
               >
                 <ToggleButton value="long" color="success" sx={{ px: 3 }}>
-                  Long
+                  لانگ
                 </ToggleButton>
                 <ToggleButton value="short" color="error" sx={{ px: 3 }}>
-                  Short
+                  شورت
                 </ToggleButton>
               </ToggleButtonGroup>
             )}
@@ -154,12 +154,9 @@ export default function TradeForm({
             gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
           }}
         >
-          <TextField label="Entry price" {...field("entry", "number")} />
-          <TextField label="Stop loss" {...field("stop", "number")} />
-          <TextField
-            label="Take profit (optional)"
-            {...field("target", "number")}
-          />
+          <TextField label="قیمت ورود" {...field("entry", "number")} />
+          <TextField label="حد ضرر" {...field("stop", "number")} />
+          <TextField label="حد سود (اختیاری)" {...field("target", "number")} />
         </Box>
 
         <Box
@@ -170,12 +167,12 @@ export default function TradeForm({
           }}
         >
           <TextField
-            label="Risk per trade (%)"
+            label="ریسک هر معامله (٪)"
             {...field("riskPct", "number")}
           />
           <Box>
             <TextField
-              label="Position size"
+              label="حجم معامله"
               fullWidth
               {...field("size", "number")}
             />
@@ -190,16 +187,16 @@ export default function TradeForm({
               sx={{ mt: 0.5 }}
             >
               {suggested > 0
-                ? `Use suggested: ${Number(suggested.toPrecision(6))}`
-                : "Enter entry and stop for a suggested size"}
+                ? `استفاده از حجم پیشنهادی: ${Number(suggested.toPrecision(6))}`
+                : "برای محاسبه حجم پیشنهادی، قیمت ورود و حد ضرر رو وارد کن"}
             </Button>
           </Box>
         </Box>
 
         {overRisk && (
           <Alert severity="warning">
-            This size risks {plannedRiskPct.toFixed(2)}% of your account, above
-            the {riskPct}% you planned.
+            با این حجم، {plannedRiskPct.toFixed(2)}٪ از موجودیت در معرض ریسکه؛
+            این مقدار از ریسک برنامه‌ریزی‌شده یعنی {riskPct}٪ بیشتره.
           </Alert>
         )}
 
@@ -222,32 +219,35 @@ export default function TradeForm({
                 inputValue={field.value ?? ""}
                 onInputChange={(_, v) => field.onChange(v)}
                 renderInput={(params) => (
-                  <TextField {...params} label="Strategy" />
+                  <TextField {...params} label="استراتژی" />
                 )}
               />
             )}
           />
           <TextField
-            label="imageurl(optional)"
+            label="لینک تصویر (اختیاری)"
             placeholder="https://..."
             {...field("imageUrl")}
           />
           <TextField
-            label="Timeframe"
+            label="تایم‌فریم"
             placeholder="4h"
             {...field("timeframe")}
           />
-          <TextField label="Opened" {...field("openedAt", "datetime-local")} />
+          <TextField
+            label="تاریخ ورود"
+            {...field("openedAt", "datetime-local")}
+          />
         </Box>
 
         <TextField
-          label={`Entry fees (${settings.currency})`}
+          label={`کارمزد ورود (${settings.currency})`}
           sx={{ maxWidth: 240 }}
           {...field("fees", "number")}
         />
 
         <TextField
-          label="Why are you taking this trade?"
+          label="چرا این معامله رو باز می‌کنی؟"
           multiline
           minRows={3}
           {...field("notes")}
@@ -260,27 +260,27 @@ export default function TradeForm({
         sx={{ p: 3, position: { md: "sticky" }, top: 24 }}
       >
         <Typography variant="subtitle1" gutterBottom>
-          Trade summary
+          خلاصه معامله
         </Typography>
         <Stack spacing={1.5} sx={{ my: 2 }}>
-          <Row label="Account" value={money.format(equity)} />
+          <Row label="موجودی حساب" value={money.format(equity)} />
           <Row
-            label="Amount at risk"
+            label="مقدار در معرض ریسک"
             value={plannedRisk > 0 ? money.format(plannedRisk) : "—"}
           />
           <Row
-            label="Risk of account"
-            value={plannedRisk > 0 ? `${plannedRiskPct.toFixed(2)}%` : "—"}
+            label="درصد ریسک از موجودی"
+            value={plannedRisk > 0 ? `${plannedRiskPct.toFixed(2)}٪` : "—"}
             warn={overRisk}
           />
           <Row
-            label="Position value"
+            label="ارزش معامله"
             value={
               isNum(size) && isNum(entry) ? money.format(size * entry) : "—"
             }
           />
           <Row
-            label="Reward : risk"
+            label="نسبت سود به ریسک"
             value={rr !== null ? `${rr.toFixed(2)} R` : "—"}
           />
         </Stack>
@@ -291,7 +291,7 @@ export default function TradeForm({
           fullWidth
           disabled={isSubmitting}
         >
-          Open trade
+          {isSubmitting ? "در حال ثبت..." : "ثبت معامله"}
         </Button>
       </Paper>
     </Box>

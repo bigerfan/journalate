@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 
 export function SignupForm() {
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -26,7 +27,7 @@ export function SignupForm() {
       password: "",
     },
   });
-  //   const [] = useState();
+  // const [] = useState();
 
   const field = makeFieldProps(register, errors);
 
@@ -36,7 +37,12 @@ export function SignupForm() {
       name: data.name,
       password: data.password,
     });
-    if (error?.message) showError(error, error.message);
+
+    if (error?.message) {
+      showError(error, error.message);
+      return;
+    }
+
     router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
     // else router.replace("/");
   };
@@ -44,11 +50,11 @@ export function SignupForm() {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Stack spacing={2.5}>
-        <Typography variant="h5">Create account</Typography>
+        <Typography variant="h5">ساخت حساب کاربری</Typography>
 
         <TextField
           {...field("name")}
-          label="Name"
+          label="نام"
           fullWidth
           error={!!errors.name}
           helperText={errors.name?.message}
@@ -57,7 +63,7 @@ export function SignupForm() {
 
         <TextField
           {...field("email")}
-          label="Email"
+          label="ایمیل"
           type="email"
           fullWidth
           error={!!errors.email}
@@ -67,23 +73,24 @@ export function SignupForm() {
 
         <TextField
           {...field("password")}
-          label="Password"
+          label="رمز عبور"
           type="password"
           fullWidth
           error={!!errors.password}
           helperText={errors.password?.message}
           autoComplete="new-password"
         />
+
         <Link href="/auth/login">
           <Typography
             color="primary"
             sx={{
-              "&: hover": {
+              "&:hover": {
                 color: "primary.light",
               },
             }}
           >
-            Already Have an Account ? Login
+            قبلاً حساب کاربری ساخته‌اید؟ وارد شوید
           </Typography>
         </Link>
 
@@ -94,7 +101,7 @@ export function SignupForm() {
           size="large"
           loading={isSubmitting}
         >
-          Sign up
+          ثبت‌نام
         </Button>
       </Stack>
     </Box>

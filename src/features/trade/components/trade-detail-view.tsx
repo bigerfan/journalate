@@ -64,20 +64,38 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
   };
 
   const facts: [string, string][] = [
-    ["Entry price", num.format(trade.entry)],
-    ["Stop loss", num.format(trade.stop)],
+    ["قیمت ورود", num.format(trade.entry)],
+    ["حد ضرر", num.format(trade.stop)],
+    ["حد سود", trade.target !== undefined ? num.format(trade.target) : "—"],
+    ["حجم معامله", num.format(trade.size)],
     [
-      "Take profit",
-      trade.target !== undefined ? num.format(trade.target) : "—",
-    ],
-    ["Position size", num.format(trade.size)],
-    [
-      "Size remaining",
+      "حجم باقی‌مانده",
       status === "closed" ? "—" : num.format(remainingSize(trade, closes)),
     ],
-    ["Planned risk", money.format(trade.riskAmount)],
-    ["Position closed", `${closedPct(closes).toFixed(2)}%`],
+    ["ریسک اولیه", money.format(trade.riskAmount)],
+    ["درصد حجم بسته‌شده", `${closedPct(closes).toFixed(2)}٪`],
   ];
+
+  const statusLabels: Record<string, string> = {
+    open: "باز",
+    partial: "بخشی بسته‌شده",
+    closed: "بسته‌شده",
+  };
+
+  const reasonLabels: Record<string, string> = {
+    stop: "حد ضرر",
+    target: "حد سود",
+    manual: "دستی",
+  };
+
+  const mistakeLabels: Record<string, string> = {
+    FOMO: "ورود از روی ترس جا ماندن",
+    "Moved stop": "جابه‌جایی حد ضرر",
+    "Closed early": "بستن زودهنگام معامله",
+    "Held too long": "باز نگه داشتن بیش از حد معامله",
+    Oversized: "حجم بیش از حد",
+    "Broke my plan": "عمل نکردن به برنامه معاملاتی",
+  };
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 3, md: 5 } }}>
@@ -96,7 +114,7 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
               mb: 2,
             }}
           >
-            ← Trades
+            ← معاملات
           </MuiLink>
 
           {/* Trade heading */}
@@ -132,15 +150,19 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
                 <Chip
                   size="small"
                   variant="outlined"
-                  label={trade.side === "long" ? "Long" : "Short"}
+                  label={trade.side === "long" ? "لانگ" : "شورت"}
                   color={trade.side === "long" ? "success" : "error"}
                 />
 
-                <Chip size="small" label={status} variant="outlined" />
+                <Chip
+                  size="small"
+                  label={statusLabels[status] ?? status}
+                  variant="outlined"
+                />
               </Stack>
 
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Opened {when.format(new Date(trade.openedAt))}
+                تاریخ ورود: {when.format(new Date(trade.openedAt))}
                 {trade.strategy ? ` · ${trade.strategy}` : ""}
               </Typography>
             </Box>
@@ -161,7 +183,7 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
         >
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, minWidth: 0 }}>
             <Typography variant="body2" color="text.secondary">
-              Realized P&L
+              سود و زیان تحقق‌یافته
             </Typography>
 
             <Typography
@@ -187,14 +209,13 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
               color="text.secondary"
               sx={{ display: "block", mt: 1 }}
             >
-              {closes.length} {closes.length === 1 ? "close" : "closes"}{" "}
-              recorded
+              {closes.length} بار بستن معامله ثبت شده
             </Typography>
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, minWidth: 0 }}>
             <Typography variant="body2" color="text.secondary">
-              R multiple
+              نسبت R
             </Typography>
 
             <Typography
@@ -219,20 +240,20 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
               color="text.secondary"
               sx={{ display: "block", mt: 1 }}
             >
-              Realized risk multiple
+              نسبت سود و زیان به ریسک اولیه
             </Typography>
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, minWidth: 0 }}>
             <Typography variant="body2" color="text.secondary">
-              Position closed
+              درصد حجم بسته‌شده
             </Typography>
 
             <Typography
               variant="h4"
               sx={{ mt: 1, fontWeight: 700, letterSpacing: "-0.03em" }}
             >
-              {closedPct(closes).toFixed(2)}%
+              {closedPct(closes).toFixed(2)}٪
             </Typography>
 
             <Box
@@ -259,7 +280,7 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
         {/* Trade information */}
         <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 2 }}>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 2.5 }}>
-            Trade information
+            اطلاعات معامله
           </Typography>
 
           <Box
@@ -316,7 +337,7 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
           >
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Closes
+                دفعات بستن معامله
               </Typography>
 
               <Typography
@@ -324,12 +345,12 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
                 color="text.secondary"
                 sx={{ mt: 0.5 }}
               >
-                Every partial or final close recorded for this trade.
+                تمام دفعاتی که بخشی یا کل این معامله رو بستی.
               </Typography>
             </Box>
 
             <Typography variant="body2" color="text.secondary">
-              {closes.length} {closes.length === 1 ? "record" : "records"}
+              {closes.length} مورد ثبت‌شده
             </Typography>
           </Stack>
 
@@ -343,11 +364,12 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
               }}
             >
               <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                No closes yet
+                هنوز معامله رو نبستی
               </Typography>
 
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Close part or all of this position to see your results here.
+                بخشی یا تمام حجم معامله رو ببند تا نتیجه‌اش اینجا نمایش داده
+                بشه.
               </Typography>
             </Paper>
           ) : (
@@ -359,13 +381,13 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
               <Table size="small" sx={{ minWidth: 1000 }}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Closed</TableCell>
-                    <TableCell align="right">% of position</TableCell>
-                    <TableCell align="right">Price</TableCell>
-                    <TableCell>Reason</TableCell>
-                    <TableCell align="right">Fees</TableCell>
-                    <TableCell align="right">P&L</TableCell>
-                    <TableCell>Mistake / note</TableCell>
+                    <TableCell>تاریخ بستن</TableCell>
+                    <TableCell align="right">درصد حجم</TableCell>
+                    <TableCell align="right">قیمت</TableCell>
+                    <TableCell>دلیل بستن</TableCell>
+                    <TableCell align="right">کارمزد</TableCell>
+                    <TableCell align="right">سود و زیان</TableCell>
+                    <TableCell>اشتباه / یادداشت</TableCell>
                     <TableCell align="right" />
                   </TableRow>
                 </TableHead>
@@ -381,14 +403,16 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
                         </TableCell>
 
                         <TableCell align="right">
-                          {num.format(c.percent)}%
+                          {num.format(c.percent)}٪
                         </TableCell>
 
                         <TableCell align="right">
                           {num.format(c.price)}
                         </TableCell>
 
-                        <TableCell>{c.reason || "—"}</TableCell>
+                        <TableCell>
+                          {reasonLabels[c.reason] ?? c.reason ?? "—"}
+                        </TableCell>
 
                         <TableCell align="right">
                           {money.format(c.fees)}
@@ -419,8 +443,14 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
                               overflow: "hidden",
                             }}
                           >
-                            {[c.mistake, c.note].filter(Boolean).join(" · ") ||
-                              "—"}
+                            {[
+                              c.mistake
+                                ? (mistakeLabels[c.mistake] ?? c.mistake)
+                                : "",
+                              c.note,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ") || "—"}
                           </Typography>
                         </TableCell>
 
@@ -432,7 +462,7 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
                               show(c.id);
                             }}
                           >
-                            Details
+                            جزئیات
                           </Button>
                         </TableCell>
                       </TableRow>

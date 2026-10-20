@@ -30,11 +30,11 @@ export default function AccountSection({ email, accountCreatedAt }: Props) {
           <BoxHeader />
 
           <Stack spacing={2}>
-            <InfoRow label="Email address" value={email} />
+            <InfoRow label="آدرس ایمیل" value={email} />
 
             {accountCreatedAt && (
               <InfoRow
-                label="Member since"
+                label="تاریخ عضویت"
                 value={new Date(accountCreatedAt).toLocaleDateString(
                   undefined,
                   { dateStyle: "medium" },
@@ -55,11 +55,11 @@ export default function AccountSection({ email, accountCreatedAt }: Props) {
           >
             <Stack spacing={0.5}>
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                Delete account
+                حذف حساب کاربری
               </Typography>
 
               <Typography variant="body2" color="text.secondary">
-                Permanently remove your account and associated data.
+                حساب کاربری و تمام اطلاعات مرتبط با آن برای همیشه حذف می‌شوند.
               </Typography>
             </Stack>
 
@@ -68,7 +68,7 @@ export default function AccountSection({ email, accountCreatedAt }: Props) {
               color="error"
               onClick={() => setDeleteModalOpen(true)}
             >
-              Delete account
+              حذف حساب کاربری
             </Button>
           </Stack>
         </Stack>
@@ -86,11 +86,11 @@ function BoxHeader() {
   return (
     <Stack spacing={0.5}>
       <Typography variant="h6" sx={{ fontWeight: 700 }}>
-        Account
+        حساب کاربری
       </Typography>
 
       <Typography variant="body2" color="text.secondary">
-        Your account information and account management.
+        اطلاعات حساب و مدیریت حساب کاربری.
       </Typography>
     </Stack>
   );

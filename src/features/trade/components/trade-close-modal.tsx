@@ -119,7 +119,7 @@ export default function CloseTradeDialog({
       onSaved();
     } catch (e) {
       setError("root.server", {
-        message: e instanceof Error ? e.message : "Could not save the close.",
+        message: e instanceof Error ? e.message : "ثبت بستن معامله انجام نشد.",
       });
     }
   };
@@ -128,7 +128,7 @@ export default function CloseTradeDialog({
     <Dialog open onClose={onCancel} fullWidth maxWidth="sm">
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogTitle>
-          Close {trade.pair} {trade.side}
+          بستن معامله {trade.pair} ({trade.side === "long" ? "لانگ" : "شورت"})
         </DialogTitle>
 
         <DialogContent>
@@ -139,7 +139,7 @@ export default function CloseTradeDialog({
 
             <Box>
               <TextField
-                label="Amount to close (% of remaining)"
+                label="مقدار بستن (٪ از حجم باقی‌مانده)"
                 fullWidth
                 autoFocus
                 {...field("percent", "number")}
@@ -147,12 +147,12 @@ export default function CloseTradeDialog({
               <Stack
                 direction="row"
                 spacing={1}
-                sx={{ mt: 1, alignItems: "center" }}
+                sx={{ mt: 1, alignItems: "center", flexWrap: "wrap" }}
               >
                 {[25, 50, 75, 100].map((n) => (
                   <Chip
                     key={n}
-                    label={`${n}%`}
+                    label={`${n}٪`}
                     size="small"
                     variant={percent === n ? "filled" : "outlined"}
                     onClick={() =>
@@ -165,15 +165,15 @@ export default function CloseTradeDialog({
                   color="text.secondary"
                   sx={{ ml: 1 }}
                 >
-                  Open now: {qty.format((trade.size * remaining) / 100)} (
-                  {remaining.toFixed(1)}% of original)
+                  حجم باز فعلی: {qty.format((trade.size * remaining) / 100)} (
+                  {remaining.toFixed(1)}٪ از حجم اولیه)
                 </Typography>
               </Stack>
             </Box>
 
             <Box>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Exit price
+                قیمت خروج
               </Typography>
               <Controller
                 name="reason"
@@ -196,19 +196,19 @@ export default function CloseTradeDialog({
                     }}
                     sx={{ mb: 2 }}
                   >
-                    <ToggleButton value="stop">Stop loss</ToggleButton>
+                    <ToggleButton value="stop">حد ضرر</ToggleButton>
                     <ToggleButton
                       value="target"
                       disabled={trade.target === undefined}
                     >
-                      Take profit
+                      حد سود
                     </ToggleButton>
-                    <ToggleButton value="manual">Manual</ToggleButton>
+                    <ToggleButton value="manual">دستی</ToggleButton>
                   </ToggleButtonGroup>
                 )}
               />
               <TextField
-                label="Price"
+                label="قیمت"
                 fullWidth
                 {...field("price", "number", {
                   readOnly: reason !== "manual",
@@ -224,11 +224,11 @@ export default function CloseTradeDialog({
               }}
             >
               <TextField
-                label={`Exit fees (${currency})`}
+                label={`کارمزد خروج (${currency})`}
                 {...field("fees", "number")}
               />
               <TextField
-                label="Closed at"
+                label="تاریخ بستن"
                 {...field("closedAt", "datetime-local")}
               />
             </Box>
@@ -237,25 +237,36 @@ export default function CloseTradeDialog({
               name="mistake"
               control={control}
               render={({ field }) => (
-                <TextField select label="Mistake (optional)" {...field}>
-                  <MenuItem value="">None</MenuItem>
-                  {MISTAKES.map((m) => (
-                    <MenuItem key={m} value={m}>
-                      {m}
-                    </MenuItem>
-                  ))}
+                <TextField select label="اشتباه (اختیاری)" {...field}>
+                  <MenuItem value="">بدون مورد</MenuItem>
+                  {MISTAKES.map((m) => {
+                    const labels: Record<string, string> = {
+                      FOMO: "ورود از روی ترس جا ماندن",
+                      "Moved stop": "جابه‌جایی حد ضرر",
+                      "Closed early": "بستن زودهنگام معامله",
+                      "Held too long": "باز نگه داشتن بیش از حد معامله",
+                      Oversized: "حجم بیش از حد",
+                      "Broke my plan": "عمل نکردن به برنامه معاملاتی",
+                    };
+
+                    return (
+                      <MenuItem key={m} value={m}>
+                        {labels[m] ?? m}
+                      </MenuItem>
+                    );
+                  })}
                 </TextField>
               )}
             />
 
             <TextField
-              label="imageurl(optional)"
+              label="لینک تصویر (اختیاری)"
               placeholder="https://"
               {...field("imageUrl")}
             />
 
             <TextField
-              label="Note (optional)"
+              label="یادداشت (اختیاری)"
               multiline
               minRows={2}
               {...field("note")}
@@ -266,7 +277,7 @@ export default function CloseTradeDialog({
             >
               <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                 <Typography variant="body2" color="text.secondary">
-                  Closing
+                  حجم بسته‌شده
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   {sliceOfOriginal > 0 ? qty.format(closingSize) : "—"}
@@ -274,7 +285,7 @@ export default function CloseTradeDialog({
               </Stack>
               <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                 <Typography variant="body2" color="text.secondary">
-                  Result
+                  نتیجه
                 </Typography>
                 <Typography
                   variant="body2"
@@ -294,12 +305,12 @@ export default function CloseTradeDialog({
               </Stack>
               <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                 <Typography variant="body2" color="text.secondary">
-                  Left open after
+                  حجم باقی‌مانده بعد از بستن
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   {remainingAfter < 1e-8
-                    ? "Nothing (fully closed)"
-                    : `${remainingAfter.toFixed(1)}% of original`}
+                    ? "معامله کامل بسته می‌شود"
+                    : `${remainingAfter.toFixed(1)}٪ از حجم اولیه`}
                 </Typography>
               </Stack>
             </Box>
@@ -307,9 +318,9 @@ export default function CloseTradeDialog({
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCancel}>انصراف</Button>
           <Button type="submit" variant="contained" disabled={isSubmitting}>
-            Close position
+            {isSubmitting ? "در حال ثبت..." : "بستن معامله"}
           </Button>
         </DialogActions>
       </Box>

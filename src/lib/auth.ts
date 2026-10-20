@@ -21,7 +21,7 @@ export const auth = betterAuth({
       void sendEmail({
         to: user.email,
         ...emailVerificationContent(url),
-      }).catch((err) => console.error("verification email failed", err));
+      }).catch((err) => console.error("ارسال ایمیل تأیید ناموفق بود", err));
     },
     autoSignInAfterVerification: true,
   },
@@ -38,7 +38,7 @@ export const auth = betterAuth({
 
 export async function requireUser() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) throw new HttpError(401, "Not signed in.");
+  if (!session) throw new HttpError(401, "وارد حساب کاربری نشده‌اید.");
   return session.user;
 }
 

@@ -75,10 +75,10 @@ export default function EquityCurveChart({
       >
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Equity curve
+            نمودار رشد سرمایه
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Starting balance plus realized trade results
+            موجودی اولیه به‌علاوه سود و زیان معاملات بسته‌شده
           </Typography>
         </Box>
 
@@ -91,7 +91,7 @@ export default function EquityCurveChart({
             color={profit >= 0 ? "success.main" : "error.main"}
           >
             {profit > 0 ? "+" : ""}
-            {formatter.format(profit)} realized
+            {formatter.format(profit)} سود و زیان تحقق‌یافته
           </Typography>
         </Box>
       </Stack>
@@ -101,7 +101,7 @@ export default function EquityCurveChart({
           viewBox={`0 0 ${width} ${height}`}
           width="100%"
           role="img"
-          aria-label="Realized equity curve"
+          aria-label="نمودار تغییرات سرمایه بر اساس سود و زیان تحقق‌یافته"
           preserveAspectRatio="none"
         >
           {[0, 1, 2, 3].map((step) => {
@@ -148,7 +148,7 @@ export default function EquityCurveChart({
 
       <Stack direction="row" sx={{ mt: 1, justifyContent: "space-between" }}>
         <Typography variant="caption" color="text.secondary">
-          Starting balance
+          موجودی اولیه
         </Typography>
         <Typography variant="caption" color="text.secondary">
           {closes.length
@@ -159,7 +159,7 @@ export default function EquityCurveChart({
                     : latest,
                 ).closedAt,
               ).toLocaleDateString()
-            : "No closes yet"}
+            : "هنوز معامله‌ای بسته نشده"}
         </Typography>
       </Stack>
     </Paper>

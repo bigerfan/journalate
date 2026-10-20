@@ -12,13 +12,13 @@ export const CURRENCIES = [
 
 export const SettingsSchema = z.object({
   startingBalance: z
-    .number({ message: "Enter your starting balance" })
-    .positive("Must be above 0"),
+    .number({ message: "موجودی اولیه را وارد کنید" })
+    .positive("مقدار باید بیشتر از صفر باشد"),
   currency: z.enum(CURRENCIES),
   maxRiskPct: z
-    .number({ message: "Enter your max risk per trade" })
-    .positive("Must be above 0")
-    .max(100, "Cannot exceed 100%"),
+    .number({ message: "حداکثر ریسک هر معامله را وارد کنید" })
+    .positive("مقدار باید بیشتر از صفر باشد")
+    .max(100, "مقدار نمی‌تواند بیشتر از ۱۰۰٪ باشد"),
   strategies: z.array(z.string()),
 });
 

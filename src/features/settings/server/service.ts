@@ -30,7 +30,7 @@ export async function saveSettings(
   ) {
     throw new HttpError(
       409,
-      "The currency cannot be changed after you have logged trades.",
+      "بعد از ثبت معامله، امکان تغییر واحد پول وجود ندارد.",
     );
   }
 

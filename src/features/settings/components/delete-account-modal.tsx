@@ -40,7 +40,7 @@ export default function DeleteAccountModal({
 
   const handleConfirm = async () => {
     if (!password.trim()) {
-      setError("Please enter your password.");
+      setError("لطفاً رمز عبورت رو وارد کن.");
       return;
     }
 
@@ -52,7 +52,7 @@ export default function DeleteAccountModal({
       setPassword("");
       onClose();
     } catch (error) {
-      showError(error, "unable to delete account.check your password");
+      showError(error, "حذف حساب کاربری انجام نشد. رمز عبورت رو بررسی کن.");
     }
   };
 
@@ -84,11 +84,11 @@ export default function DeleteAccountModal({
           component="span"
           sx={{ fontSize: "1.125rem", fontWeight: 700 }}
         >
-          Delete account
+          حذف حساب کاربری
         </Typography>
 
         <IconButton
-          aria-label="Close dialog"
+          aria-label="بستن پنجره"
           onClick={handleClose}
           disabled={deleting}
           size="small"
@@ -101,14 +101,14 @@ export default function DeleteAccountModal({
       <DialogContent>
         <Stack sx={{ gap: 2, pt: 1 }}>
           <DialogContentText>
-            This action is permanent and may delete your account and associated
-            trading data. Enter your password to confirm.
+            این کار برگشت‌پذیر نیست و ممکنه حساب کاربری و اطلاعات معاملاتت رو
+            برای همیشه حذف کنه. برای تأیید، رمز عبورت رو وارد کن.
           </DialogContentText>
 
           <TextField
             fullWidth
             type="password"
-            label="Password"
+            label="رمز عبور"
             autoComplete="current-password"
             value={password}
             onChange={(event) => {
@@ -141,7 +141,7 @@ export default function DeleteAccountModal({
         }}
       >
         <Button onClick={handleClose} disabled={deleting} variant="outlined">
-          Cancel
+          انصراف
         </Button>
 
         <Button
@@ -150,7 +150,7 @@ export default function DeleteAccountModal({
           color="error"
           variant="contained"
         >
-          {deleting ? "Deleting..." : "Confirm delete"}
+          {deleting ? "در حال حذف..." : "تأیید حذف"}
         </Button>
       </DialogActions>
     </Dialog>

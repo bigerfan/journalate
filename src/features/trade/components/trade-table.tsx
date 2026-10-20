@@ -50,9 +50,9 @@ const STATUS: Record<
     color: "info" | "warning" | "default";
   }
 > = {
-  open: { label: "Open", color: "info" },
-  partial: { label: "Partial", color: "warning" },
-  closed: { label: "Closed", color: "default" },
+  open: { label: "باز", color: "info" },
+  partial: { label: "بخشی بسته‌شده", color: "warning" },
+  closed: { label: "بسته‌شده", color: "default" },
 };
 
 export default function TradeTable({
@@ -114,7 +114,7 @@ export default function TradeTable({
         </Box>
 
         <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
-          No trades yet
+          هنوز معامله‌ای ثبت نکردی
         </Typography>
 
         <Typography
@@ -122,8 +122,8 @@ export default function TradeTable({
           variant="body2"
           sx={{ maxWidth: 340, mx: "auto", mb: 3 }}
         >
-          Your trading journal starts here. Record your first position to track
-          entries, risk, and performance.
+          دفتر ثبت معاملاتت از اینجا شروع می‌شه. اولین معامله‌ات رو ثبت کن تا
+          بتونی قیمت‌های ورود، ریسک و عملکردت رو بررسی کنی.
         </Typography>
 
         <Button
@@ -138,7 +138,7 @@ export default function TradeTable({
             boxShadow: "none",
           }}
         >
-          + New trade
+          + ثبت معامله جدید
         </Button>
       </Paper>
     );
@@ -171,19 +171,19 @@ export default function TradeTable({
       >
         <TableHead sx={{ bgcolor: "action.hover", color: "text.secondary" }}>
           <TableRow>
-            <TableCell>Opened</TableCell>
-            <TableCell>Pair</TableCell>
-            <TableCell align="right">Entry</TableCell>
-            <TableCell align="right">Stop</TableCell>
-            <TableCell align="right">Target</TableCell>
-            <TableCell align="right">Size left</TableCell>
-            <TableCell align="right">Risk</TableCell>
-            <TableCell align="right">R:R</TableCell>
-            <TableCell align="right">Realized P&amp;L</TableCell>
-            <TableCell>Strategy</TableCell>
-            <TableCell align="center">Screenshot</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell align="right">Actions</TableCell>
+            <TableCell>تاریخ ورود</TableCell>
+            <TableCell>جفت‌ارز</TableCell>
+            <TableCell align="right">ورود</TableCell>
+            <TableCell align="right">حد ضرر</TableCell>
+            <TableCell align="right">حد سود</TableCell>
+            <TableCell align="right">حجم باقی‌مانده</TableCell>
+            <TableCell align="right">ریسک</TableCell>
+            <TableCell align="right">سود به ریسک</TableCell>
+            <TableCell align="right">سود و زیان تحقق‌یافته</TableCell>
+            <TableCell>استراتژی</TableCell>
+            <TableCell align="center">تصویر معامله</TableCell>
+            <TableCell>وضعیت</TableCell>
+            <TableCell align="right">عملیات</TableCell>
           </TableRow>
         </TableHead>
 
@@ -272,7 +272,7 @@ export default function TradeTable({
                       variant="caption"
                       color="text.secondary"
                     >
-                      {riskOfAccount.toFixed(2)}% of equity
+                      {riskOfAccount.toFixed(2)}٪ از موجودی
                     </Typography>
                   )}
                 </TableCell>
@@ -322,25 +322,25 @@ export default function TradeTable({
 
                 <TableCell align="center">
                   {t.imageUrl ? (
-                    <Tooltip title="Open screenshot">
+                    <Tooltip title="باز کردن تصویر معامله">
                       <IconButton
                         component="a"
                         href={t.imageUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         size="small"
-                        aria-label={`Open screenshot for ${t.pair}`}
+                        aria-label={`باز کردن تصویر معامله ${t.pair}`}
                       >
                         <LinkOutlined fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   ) : (
-                    <Tooltip title="No screenshot attached">
+                    <Tooltip title="تصویری ثبت نشده">
                       <span>
                         <IconButton
                           size="small"
                           disabled
-                          aria-label="No screenshot attached"
+                          aria-label="تصویری ثبت نشده"
                         >
                           <LinkOffOutlined fontSize="small" />
                         </IconButton>
@@ -355,7 +355,7 @@ export default function TradeTable({
                     color={STATUS[status].color}
                     label={
                       status === "partial"
-                        ? `Partial · ${closedPct(closes).toFixed(0)}% closed`
+                        ? `بخشی بسته‌شده · ${closedPct(closes).toFixed(0)}٪`
                         : STATUS[status].label
                     }
                     sx={{
@@ -384,13 +384,13 @@ export default function TradeTable({
                         borderRadius: 1.5,
                       }}
                     >
-                      Close
+                      بستن
                     </Button>
 
-                    <Tooltip title="Delete trade">
+                    <Tooltip title="حذف معامله">
                       <IconButton
                         size="small"
-                        aria-label={`Delete ${t.pair} trade`}
+                        aria-label={`حذف معامله ${t.pair}`}
                         onClick={() => onDelete(t)}
                         sx={{
                           color: "text.secondary",
@@ -430,7 +430,7 @@ function StackPair({ pair, side }: { pair: string; side: Trade["side"] }) {
 
       <Chip
         size="small"
-        label={side === "long" ? "Long" : "Short"}
+        label={side === "long" ? "لانگ" : "شورت"}
         color={side === "long" ? "success" : "error"}
         variant="outlined"
         sx={{

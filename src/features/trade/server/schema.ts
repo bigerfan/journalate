@@ -4,7 +4,7 @@ import { z } from "zod";
 // rule the UI enforces, and computes riskAmount itself instead of trusting the client.
 const httpsUrl = z
   .url()
-  .refine((u) => u.startsWith("https://"), "Must be an https link");
+  .refine((u) => u.startsWith("https://"), "لینک باید با https شروع بشه");
 
 export const IdSchema = z.object({ id: z.string().uuid() });
 
@@ -34,7 +34,7 @@ export const CreateTradeSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["stop"],
-        message: "Stop is on the wrong side of entry",
+        message: "حد ضرر در سمت اشتباهی از قیمت ورود قرار گرفته",
       });
     }
     if (
@@ -44,7 +44,7 @@ export const CreateTradeSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["target"],
-        message: "Target is on the wrong side of entry",
+        message: "حد سود در سمت اشتباهی از قیمت ورود قرار گرفته",
       });
     }
   });

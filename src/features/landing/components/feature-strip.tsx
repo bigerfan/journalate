@@ -17,7 +17,7 @@ function RiskDiagram({ c }: { c: Colors }) {
       viewBox="0 0 160 56"
       width="100%"
       role="img"
-      aria-label="Stop, entry and target on a price line"
+      aria-label="حد ضرر، نقطه ورود و حد سود روی نمودار قیمت"
     >
       <line x1="8" x2="152" y1="24" y2="24" stroke={c.line} strokeWidth="2" />
       <rect x="24" y="18" width="46" height="12" fill={c.bad} opacity="0.3" />
@@ -26,9 +26,9 @@ function RiskDiagram({ c }: { c: Colors }) {
       <circle cx="70" cy="24" r="4" fill={c.text} />
       <circle cx="140" cy="24" r="4" fill={c.good} />
       {[
-        ["Stop", 24],
-        ["Entry", 70],
-        ["Target", 140],
+        ["حد ضرر", 24],
+        ["ورود", 70],
+        ["حد سود", 140],
       ].map(([t, x]) => (
         <text
           key={t}
@@ -47,21 +47,23 @@ function RiskDiagram({ c }: { c: Colors }) {
 
 function ScaleOutDiagram({ c }: { c: Colors }) {
   const parts = [
-    { w: 70, o: 1, label: "50%" },
-    { w: 42, o: 0.6, label: "30%" },
-    { w: 28, o: 0.3, label: "20%" },
+    { w: 70, o: 1, label: "۵۰٪" },
+    { w: 42, o: 0.6, label: "۳۰٪" },
+    { w: 28, o: 0.3, label: "۲۰٪" },
   ];
   let x = 8;
+
   return (
     <svg
       viewBox="0 0 160 56"
       width="100%"
       role="img"
-      aria-label="A position closed in three exits"
+      aria-label="بستن یک موقعیت معاملاتی در سه مرحله"
     >
       {parts.map((p) => {
         const cx = x;
         x += p.w + 4;
+
         return (
           <g key={p.label}>
             <rect
@@ -93,12 +95,13 @@ function RDiagram({ c }: { c: Colors }) {
   const rs = [1.8, -1, 2.4, -0.6, 3.1, -1, 1.2, 2, -0.5];
   const base = 28;
   const unit = 8;
+
   return (
     <svg
       viewBox="0 0 160 56"
       width="100%"
       role="img"
-      aria-label="Results measured in R multiples"
+      aria-label="نتایج معاملات بر اساس مضرب R"
     >
       <line
         x1="4"
@@ -126,23 +129,24 @@ function RDiagram({ c }: { c: Colors }) {
 const ITEMS = [
   {
     Diagram: RiskDiagram,
-    title: "Size by risk",
-    text: "Set the stop. Get the position size.",
+    title: "محاسبه حجم معامله بر اساس ریسک",
+    text: "حد ضرر را مشخص کن و حجم مناسب معامله را به دست بیار.",
   },
   {
     Diagram: ScaleOutDiagram,
-    title: "Scale out",
-    text: "Close in steps. P&L stays exact.",
+    title: "بستن پله‌ای معامله",
+    text: "معامله را مرحله‌به‌مرحله ببند و سود و زیان را دقیق محاسبه کن.",
   },
   {
     Diagram: RDiagram,
-    title: "Measure in R",
-    text: "Every result against its planned risk.",
+    title: "اندازه‌گیری بر اساس R",
+    text: "عملکرد هر معامله رو با ریسک اولیه‌اش مقایسه کن.",
   },
 ];
 
 export default function FeatureStrip() {
   const t = useTheme();
+
   const c: Colors = {
     good: t.palette.success.main,
     bad: t.palette.error.main,
@@ -174,9 +178,11 @@ export default function FeatureStrip() {
             <Box sx={{ maxWidth: 260, mb: 2.5 }}>
               <Diagram c={c} />
             </Box>
+
             <Typography sx={{ fontWeight: 700, letterSpacing: "-0.01em" }}>
               {title}
             </Typography>
+
             <Typography
               variant="body2"
               color="text.secondary"

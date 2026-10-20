@@ -15,22 +15,22 @@ export const dashboardConfig = {
 
   navItems: [
     {
-      title: "Overview",
+      title: "نمای کلی",
       href: "/dashboard",
       icon: DashboardRoundedIcon,
     },
     {
-      title: "Trades",
+      title: "معاملات",
       href: "/trades",
       icon: ShowChartRoundedIcon,
     },
     // {
-    //   title: "Trade Closes",
+    //   title: "معاملات بسته‌شده",
     //   href: "/closes",
     //   icon: ReceiptLongRoundedIcon,
     // },
     {
-      title: "Settings",
+      title: "تنظیمات",
       href: "/settings",
       icon: SettingsRoundedIcon,
     },

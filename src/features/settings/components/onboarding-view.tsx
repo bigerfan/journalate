@@ -19,11 +19,11 @@ export default function OnboardingView({
   return (
     <Container maxWidth="sm" sx={{ py: 8 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Set up your journal
+        تنظیم دفتر ثبت معاملات
       </Typography>
       <Typography color="text.secondary" sx={{ mb: 4 }}>
-        Your balance and risk limit are used to calculate position sizes. You
-        can change them later.
+        موجودی اولیه و سقف ریسک برای محاسبه حجم هر معامله استفاده می‌شن. هر زمان
+        بخوای می‌تونی تغییرشون بدی.
       </Typography>
       {initial && (
         <Button
@@ -32,7 +32,7 @@ export default function OnboardingView({
           startIcon={<ArrowForward />}
           sx={{ mb: 2 }}
         >
-          dashboard
+          داشبورد
         </Button>
       )}
 
@@ -42,7 +42,7 @@ export default function OnboardingView({
           await queryClient.invalidateQueries({ queryKey: ["settings"] });
           router.push("/trades");
         }}
-        submitLabel={initial ? "update settings" : "startjournal"}
+        submitLabel={initial ? "ذخیره تغییرات" : "شروع ثبت معاملات"}
       />
     </Container>
   );

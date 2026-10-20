@@ -12,6 +12,7 @@ type NewTradePage = {
     equity: number;
   };
 };
+
 export default function NewTradeView({ initialData }: NewTradePage) {
   const { data: settings } = useQuery({
     queryKey: ["settings"],
@@ -22,11 +23,11 @@ export default function NewTradeView({ initialData }: NewTradePage) {
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        New trade
+        ثبت معامله جدید
       </Typography>
       <Typography color="text.secondary" sx={{ mb: 4 }}>
-        Enter your entry and stop, and the size is calculated from your risk
-        limit.
+        قیمت ورود و حد ضرر رو وارد کن تا حجم معامله بر اساس سقف ریسکت محاسبه
+        بشه.
       </Typography>
 
       {settings ? (

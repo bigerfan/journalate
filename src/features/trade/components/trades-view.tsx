@@ -107,7 +107,7 @@ export default function TradesView({
         queryClient.invalidateQueries({ queryKey: ["closes"] }),
       ]);
     } catch (error) {
-      showError(error, "Could not delete trade");
+      showError(error, "حذف معامله انجام نشد.");
     }
   };
 
@@ -166,7 +166,7 @@ export default function TradesView({
                 letterSpacing: "-0.04em",
               }}
             >
-              Trades
+              معاملات
             </Typography>
 
             <Typography
@@ -174,7 +174,7 @@ export default function TradesView({
               color="text.secondary"
               sx={{ mt: 0.75 }}
             >
-              Manage your positions and keep track of your trading risk.
+              معاملاتت رو مدیریت کن و حواست به ریسک هر معامله باشه.
             </Typography>
           </Box>
 
@@ -185,7 +185,7 @@ export default function TradesView({
               variant="contained"
               size="large"
             >
-              + New trade
+              + ثبت معامله جدید
             </Button>
 
             {/* Testing only — intentionally retained */}
@@ -205,33 +205,33 @@ export default function TradesView({
           <Grid container spacing={2} sx={{ mb: 4 }}>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <SummaryCard
-                label="Account equity"
+                label="موجودی حساب"
                 value={summary.equity}
-                description="Current account value"
+                description="ارزش فعلی حساب"
               />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <SummaryCard
-                label="Open trades"
+                label="معاملات باز"
                 value={String(summary.openCount)}
-                description="Active positions"
+                description="معاملات فعال"
               />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <SummaryCard
-                label="Remaining risk"
+                label="ریسک باقی‌مانده"
                 value={summary.risk}
-                description="Risk across open trades"
+                description="مجموع ریسک معاملات باز"
               />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <SummaryCard
-                label="Account at risk"
+                label="درصد موجودی در معرض ریسک"
                 value={summary.riskPercentage}
-                description="Relative to account equity"
+                description="نسبت به موجودی فعلی حساب"
               />
             </Grid>
           </Grid>
@@ -261,15 +261,13 @@ export default function TradesView({
                 Journalate
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Review and manage all your trades.
+                همه معاملاتت رو بررسی و مدیریت کن.
               </Typography>
             </Box>
 
             {
               <Chip
-                label={`${trades.length} total ${
-                  trades.length === 1 ? "trade" : "trades"
-                }`}
+                label={`${trades.length} معامله`}
                 variant="outlined"
                 size="small"
                 sx={{ borderRadius: 1.5 }}
@@ -305,7 +303,7 @@ export default function TradesView({
               >
                 <CircularProgress size={28} />
                 <Typography variant="body2" color="text.secondary">
-                  Loading your trades...
+                  در حال بارگذاری معاملات...
                 </Typography>
               </Box>
             )}

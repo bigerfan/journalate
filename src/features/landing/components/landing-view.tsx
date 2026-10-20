@@ -41,7 +41,7 @@ export default function LandingView({ user }: { user?: User }) {
               Journalate
             </Typography>
             <Button component={Link} href="/auth/login" color="inherit">
-              Log in
+              ورود
             </Button>
           </Stack> */}
 
@@ -52,18 +52,20 @@ export default function LandingView({ user }: { user?: User }) {
                 fontSize: { xs: "2.7rem", sm: "3.5rem", md: "4.5rem" },
                 fontWeight: 750,
                 letterSpacing: "-0.045em",
-                lineHeight: 1.02,
+                lineHeight: 1.3,
               }}
             >
-              Every trade, accounted for.
+              تمام معاملاتت، دقیق و شفاف.
             </Typography>
+
             <Typography
               color="text.secondary"
               sx={{ mt: 2.5, maxWidth: 440, fontSize: "1.1rem" }}
             >
-              Log entries, partial closes and mistakes. See your R and your
-              equity as they really are.
+              معاملات، بستن‌های جزئی و اشتباهاتت رو ثبت کن. عملکردت بر اساس نسبت
+              R و منحنی سرمایه، همون‌طور که واقعاً هست، ببین.
             </Typography>
+
             {!user && (
               <Stack direction="row" sx={{ gap: 1.5, mt: 4, flexWrap: "wrap" }}>
                 <Button
@@ -72,15 +74,16 @@ export default function LandingView({ user }: { user?: User }) {
                   variant="contained"
                   size="large"
                 >
-                  Start journaling
+                  شروع ثبت معاملات
                 </Button>
+
                 <Button
                   component={Link}
                   href="/auth/login"
                   size="large"
                   color="inherit"
                 >
-                  Log in
+                  ورود
                 </Button>
               </Stack>
             )}
@@ -97,7 +100,7 @@ export default function LandingView({ user }: { user?: User }) {
             zIndex: 1,
           }}
         >
-          Sample data
+          داده‌های نمونه
         </Typography> */}
       </Box>
 

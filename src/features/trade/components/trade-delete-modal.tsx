@@ -42,7 +42,7 @@ export const TradeDeleteModal = ({
               variant="h6"
               sx={{ fontWeight: 600 }}
             >
-              Delete trade?
+              حذف معامله؟
             </Typography>
 
             <Typography
@@ -51,8 +51,7 @@ export const TradeDeleteModal = ({
               color="text.secondary"
               sx={{ mt: 0.5 }}
             >
-              This action cannot be undone. Are you sure you want to delete this
-              trade?
+              این کار قابل برگشت نیست. مطمئنی می‌خوای این معامله رو حذف کنی؟
             </Typography>
           </Box>
 
@@ -74,17 +73,20 @@ export const TradeDeleteModal = ({
                 width: 1,
               }}
             >
-              <TradeInfo label="Pair" value={trade?.pair} />
-              <TradeInfo label="Side" value={trade?.side} />
-              <TradeInfo label="Entry" value={trade?.entry} />
-              <TradeInfo label="Size" value={trade?.size} />
+              <TradeInfo label="جفت‌ارز" value={trade?.pair} />
+              <TradeInfo
+                label="جهت معامله"
+                value={trade?.side === "long" ? "لانگ" : "شورت"}
+              />
+              <TradeInfo label="قیمت ورود" value={trade?.entry} />
+              <TradeInfo label="حجم معامله" value={trade?.size} />
             </Stack>
           </Box>
 
           {/* Actions */}
           <Stack direction="row" sx={{ justifyContent: "flex-end", gap: 1.5 }}>
             <Button variant="outlined" onClick={handleClose}>
-              Cancel
+              انصراف
             </Button>
 
             <Button
@@ -92,7 +94,7 @@ export const TradeDeleteModal = ({
               color="error"
               onClick={() => handleDelete(trade?.id)}
             >
-              Delete trade
+              حذف معامله
             </Button>
           </Stack>
         </Stack>

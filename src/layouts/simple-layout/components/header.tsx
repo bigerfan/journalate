@@ -30,6 +30,7 @@ export default function Header({ user }: { user?: User }) {
           >
             Journalate
           </MuiLink>
+
           {user ? (
             <Stack direction="row" sx={{ gap: 1, alignItems: "center" }}>
               <Button
@@ -38,24 +39,26 @@ export default function Header({ user }: { user?: User }) {
                 variant="contained"
                 startIcon={<Add />}
               >
-                new trade
+                ثبت معامله
               </Button>
+
               <Button
                 component={Link}
                 href="/dashboard"
                 color="inherit"
                 startIcon={<Dashboard />}
               >
-                dashboard
+                داشبورد
               </Button>
             </Stack>
           ) : (
             <Stack direction="row" sx={{ gap: 1, alignItems: "center" }}>
               <Button component={Link} href="/auth/login" color="inherit">
-                Log in
+                ورود
               </Button>
+
               <Button component={Link} href="/auth/signup" variant="contained">
-                Sign up
+                ثبت‌نام
               </Button>
             </Stack>
           )}

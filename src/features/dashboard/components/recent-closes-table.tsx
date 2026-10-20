@@ -39,16 +39,16 @@ export default function RecentClosesTable({ trades, closes, currency }: Props) {
   return (
     <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden" }}>
       <Typography variant="h6" sx={{ fontWeight: 600, p: 3, pb: 2 }}>
-        Recent closes
+        آخرین معاملات بسته‌شده
       </Typography>
 
       <TableContainer>
         <Table sx={{ minWidth: 560 }}>
           <TableHead>
             <TableRow>
-              <TableCell>Pair</TableCell>
-              <TableCell>Closed</TableCell>
-              <TableCell align="right">P&L</TableCell>
+              <TableCell>جفت‌ارز</TableCell>
+              <TableCell>تاریخ بستن</TableCell>
+              <TableCell align="right">سود و زیان</TableCell>
             </TableRow>
           </TableHead>
 
@@ -60,7 +60,7 @@ export default function RecentClosesTable({ trades, closes, currency }: Props) {
                     variant="body2"
                     sx={{ py: 3, color: "text.secondary", textAlign: "center" }}
                   >
-                    No closes yet
+                    هنوز معامله‌ای بسته نشده
                   </Typography>
                 </TableCell>
               </TableRow>

@@ -26,13 +26,13 @@ export default function SettingsView({
   const money = getCurrencyFormatter(settings.currency);
 
   const rows: [string, React.ReactNode][] = [
-    ["Currency", settings.currency],
-    ["Starting balance", money.format(settings.startingBalance)],
-    ["Max risk per trade", `${settings.maxRiskPct}%`],
+    ["واحد پول", settings.currency],
+    ["موجودی اولیه", money.format(settings.startingBalance)],
+    ["حداکثر ریسک هر معامله", `${settings.maxRiskPct}%`],
     [
-      "Strategies",
+      "استراتژی‌ها",
       settings.strategies.length === 0 ? (
-        "None"
+        "تعریف نشده"
       ) : (
         <Stack
           direction="row"
@@ -49,7 +49,7 @@ export default function SettingsView({
   return (
     <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
       <Typography variant="h4" component="h1" sx={{ fontWeight: 750, mb: 3 }}>
-        Settings
+        تنظیمات
       </Typography>
       <Stack direction="column" sx={{ gap: 2 }}>
         <Paper elevation={0} sx={{ p: 3, border: 1, borderColor: "divider" }}>
@@ -62,7 +62,7 @@ export default function SettingsView({
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Trading setup
+              تنظیمات معاملات
             </Typography>
             <Button
               component={Link}
@@ -70,7 +70,7 @@ export default function SettingsView({
               variant="outlined"
               size="small"
             >
-              Edit
+              ویرایش
             </Button>
           </Stack>
 

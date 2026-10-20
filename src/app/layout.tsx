@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import { AppToaster } from "@/components/toast/app-toast";
 import Providers from "./providers";
 import { ProgressBar } from "@/components/progress-bar/progress-bar";
+import { CacheProvider } from "@/theme/cache-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,17 +25,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en">
+    <html lang="fa" dir="rtl">
       <body>
         <Providers>
-          <AppRouterCacheProvider>
+          <CacheProvider>
             <ThemeProvider theme={theme}>
               <ProgressBar />
               <CssBaseline />
               <AppToaster />
               {children}
             </ThemeProvider>
-          </AppRouterCacheProvider>
+          </CacheProvider>
         </Providers>
       </body>
     </html>

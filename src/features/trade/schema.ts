@@ -4,28 +4,30 @@ import { z } from "zod";
 export const makeTradeFormSchema = (maxRiskPct: number) =>
   z
     .object({
-      pair: z.string().trim().min(1, "Enter a pair, e.g. BTCUSDT"),
+      pair: z.string().trim().min(1, "جفت‌ارز رو وارد کن؛ مثلاً BTCUSDT"),
       side: z.enum(["long", "short"]),
       entry: z
-        .number({ message: "Enter the entry price" })
-        .positive("Must be above 0"),
+        .number({ message: "قیمت ورود رو وارد کن" })
+        .positive("قیمت باید بیشتر از صفر باشه"),
       stop: z
-        .number({ message: "Enter a stop loss" })
-        .positive("Must be above 0"),
-      target: z.number().positive("Must be above 0").optional(),
-      size: z.number({ message: "Enter a size" }).positive("Must be above 0"),
+        .number({ message: "حد ضرر رو وارد کن" })
+        .positive("قیمت باید بیشتر از صفر باشه"),
+      target: z.number().positive("قیمت باید بیشتر از صفر باشه").optional(),
+      size: z
+        .number({ message: "حجم معامله رو وارد کن" })
+        .positive("حجم باید بیشتر از صفر باشه"),
       riskPct: z
-        .number({ message: "Enter the risk %" })
-        .positive("Must be above 0")
-        .max(maxRiskPct, `Your max risk per trade is ${maxRiskPct}%`),
+        .number({ message: "درصد ریسک رو وارد کن" })
+        .positive("ریسک باید بیشتر از صفر باشه")
+        .max(maxRiskPct, `حداکثر ریسک هر معامله ${maxRiskPct}٪ است`),
       imageUrl: z.preprocess(
         (value: string) => (value === "" ? undefined : value),
         z.url().optional(),
       ),
-      fees: z.number().min(0, "Cannot be negative").optional(),
+      fees: z.number().min(0, "کارمزد نمی‌تونه منفی باشه").optional(),
       strategy: z.string().optional(),
       timeframe: z.string().optional(),
-      openedAt: z.string().min(1, "Pick a date"),
+      openedAt: z.string().min(1, "تاریخ رو انتخاب کن"),
       notes: z.string().optional(),
     })
     .superRefine((v, ctx) => {
@@ -35,8 +37,8 @@ export const makeTradeFormSchema = (maxRiskPct: number) =>
           code: "custom",
           path: ["stop"],
           message: long
-            ? "For a long, the stop must be below entry"
-            : "For a short, the stop must be above entry",
+            ? "در معامله لانگ، حد ضرر باید پایین‌تر از قیمت ورود باشه"
+            : "در معامله شورت، حد ضرر باید بالاتر از قیمت ورود باشه",
         });
       }
       if (
@@ -47,8 +49,8 @@ export const makeTradeFormSchema = (maxRiskPct: number) =>
           code: "custom",
           path: ["target"],
           message: long
-            ? "For a long, the target must be above entry"
-            : "For a short, the target must be below entry",
+            ? "در معامله لانگ، حد سود باید بالاتر از قیمت ورود باشه"
+            : "در معامله شورت، حد سود باید پایین‌تر از قیمت ورود باشه",
         });
       }
     });
@@ -70,15 +72,15 @@ export const makeCloseFormSchema = (openedAt: string) =>
     .object({
       // % of the REMAINING position; the dialog converts it to % of the original when saving
       percent: z
-        .number({ message: "Enter how much to close" })
-        .positive("Must be above 0")
-        .max(100, "Cannot exceed 100% of the remaining position"),
+        .number({ message: "درصد حجمی که می‌خوای ببندی رو وارد کن" })
+        .positive("درصد باید بیشتر از صفر باشه")
+        .max(100, "نمی‌تونی بیشتر از ۱۰۰٪ حجم باقی‌مونده رو ببندی"),
       reason: z.enum(["stop", "target", "manual"]),
       price: z
-        .number({ message: "Enter the exit price" })
-        .positive("Must be above 0"),
-      fees: z.number().min(0, "Cannot be negative").optional(),
-      closedAt: z.string().min(1, "Pick a date"),
+        .number({ message: "قیمت خروج رو وارد کن" })
+        .positive("قیمت باید بیشتر از صفر باشه"),
+      fees: z.number().min(0, "کارمزد نمی‌تونه منفی باشه").optional(),
+      closedAt: z.string().min(1, "تاریخ رو انتخاب کن"),
       mistake: z.string().optional(),
       note: z.string().optional(),
       imageUrl: z.preprocess(
@@ -90,7 +92,7 @@ export const makeCloseFormSchema = (openedAt: string) =>
       (v) => new Date(v.closedAt).getTime() >= new Date(openedAt).getTime(),
       {
         path: ["closedAt"],
-        message: "Cannot be before the trade was opened",
+        message: "تاریخ بستن معامله نمی‌تونه قبل از تاریخ باز شدنش باشه",
       },
     );
 

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -31,6 +32,7 @@ export function LoginForm() {
       email: data.email,
       password: data.password,
     });
+
     if (authData?.user) router.replace("/dashboard");
     if (error?.message) showError(error, error.message);
 
@@ -41,11 +43,11 @@ export function LoginForm() {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Stack spacing={2.5}>
-        <Typography variant="h5">Login</Typography>
+        <Typography variant="h5">ورود به حساب کاربری</Typography>
 
         <TextField
           {...field("email")}
-          label="Email"
+          label="ایمیل"
           type="email"
           fullWidth
           error={!!errors.email}
@@ -55,25 +57,27 @@ export function LoginForm() {
 
         <TextField
           {...field("password")}
-          label="Password"
+          label="رمز عبور"
           type="password"
           fullWidth
           error={!!errors.password}
           helperText={errors.password?.message}
           autoComplete="current-password"
         />
+
         <Link href="/auth/signup">
           <Typography
             color="primary"
             sx={{
-              "&: hover": {
+              "&:hover": {
                 color: "primary.light",
               },
             }}
           >
-            Dont Have an Account ? Signup
+            حساب کاربری ندارید؟ ثبت‌نام کنید
           </Typography>
         </Link>
+
         <Button
           type="submit"
           variant="contained"
@@ -81,7 +85,7 @@ export function LoginForm() {
           size="large"
           loading={isSubmitting}
         >
-          Login
+          ورود
         </Button>
       </Stack>
     </Box>

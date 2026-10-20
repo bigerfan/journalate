@@ -1,14 +1,14 @@
 import z from "zod";
 
 export const loginSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  email: z.email("آدرس ایمیل معتبر نیست"),
+  password: z.string().min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد"),
 });
 
 export const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(2, "نام باید حداقل ۲ کاراکتر باشد"),
+  email: z.email("آدرس ایمیل معتبر نیست"),
+  password: z.string().min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد"),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

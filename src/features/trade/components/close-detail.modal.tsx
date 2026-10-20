@@ -53,7 +53,7 @@ export default function CloseDetailModal({
     >
       {close && <Body trade={trade} close={close} money={money} />}
       <DialogActions>
-        <Button onClick={onClose}>Done</Button>
+        <Button onClick={onClose}>بستن</Button>
       </DialogActions>
     </Dialog>
   );
@@ -72,15 +72,15 @@ function Body({
   const signed = (n: number) => `${n > 0 ? "+" : ""}${money.format(n)}`;
 
   const rows: [string, string][] = [
-    ["Closed at", when.format(new Date(close.closedAt))],
-    ["Recorded at", when.format(new Date(close.createdAt))],
-    ["Percent of original position", `${num.format(close.percent)}%`],
-    ["Size closed", num.format(b.size)],
-    ["Entry price", num.format(trade.entry)],
-    ["Exit price", num.format(close.price)],
-    ["Gross P&L", signed(b.gross)],
-    ["Exit fees", money.format(b.exitFees)],
-    ["Share of entry fees", money.format(b.entryFeeShare)],
+    ["تاریخ بستن", when.format(new Date(close.closedAt))],
+    ["تاریخ ثبت", when.format(new Date(close.createdAt))],
+    ["درصد از حجم اولیه معامله", `${num.format(close.percent)}٪`],
+    ["حجم بسته‌شده", num.format(b.size)],
+    ["قیمت ورود", num.format(trade.entry)],
+    ["قیمت خروج", num.format(close.price)],
+    ["سود و زیان قبل از کارمزد", signed(b.gross)],
+    ["کارمزد خروج", money.format(b.exitFees)],
+    ["سهم کارمزد ورود", money.format(b.entryFeeShare)],
   ];
 
   return (
@@ -88,16 +88,26 @@ function Body({
       <DialogTitle id="close-detail-title" component="div">
         <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
           <Typography variant="h6" component="h2" sx={{ fontWeight: 700 }}>
-            {trade.pair} close
+            بستن معامله {trade.pair}
           </Typography>
-          <Chip size="small" variant="outlined" label={close.reason} />
+          <Chip
+            size="small"
+            variant="outlined"
+            label={
+              close.reason === "stop"
+                ? "حد ضرر"
+                : close.reason === "target"
+                  ? "حد سود"
+                  : "دستی"
+            }
+          />
         </Stack>
       </DialogTitle>
 
       <DialogContent dividers>
         <Box sx={{ mb: 2 }}>
           <Typography variant="caption" color="text.secondary">
-            Net P&amp;L
+            سود و زیان خالص
           </Typography>
           <Typography
             variant="h4"
@@ -134,8 +144,8 @@ function Body({
           ))}
         </Stack>
 
-        <Section title="Mistake" text={close.mistake} />
-        <Section title="Note" text={close.note} />
+        <Section title="اشتباه" text={close.mistake} />
+        <Section title="یادداشت" text={close.note} />
 
         {close.imageUrl && (
           <Box sx={{ mt: 2 }}>
@@ -146,7 +156,7 @@ function Body({
               rel="noopener noreferrer"
               variant="outlined"
             >
-              Open screenshot
+              مشاهده تصویر معامله
             </Button>
           </Box>
         )}

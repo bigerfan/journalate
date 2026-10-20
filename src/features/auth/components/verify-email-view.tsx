@@ -17,11 +17,9 @@ import { toast } from "sonner";
 import { showError } from "@/components/toast/show-error";
 import { authClient } from "@/lib/auth-client";
 
-// UI-only guard against double clicks. The real limit has to be on the server (rate limiting).
 const COOLDOWN_SECONDS = 60;
 
 export default function VerifyEmailView({ email }: { email?: string }) {
-  // Starts running: an email was just sent by the signup or login that brought the user here.
   const [secondsLeft, setSecondsLeft] = useState(COOLDOWN_SECONDS);
   const [sending, setSending] = useState(false);
 
@@ -41,10 +39,10 @@ export default function VerifyEmailView({ email }: { email?: string }) {
     setSending(false);
 
     if (error) {
-      showError(error, "Could not send the email. Try again in a moment.");
+      showError(error, "ارسال ایمیل انجام نشد. کمی بعد دوباره امتحان کن.");
       return;
     }
-    toast.success("Verification email sent");
+    toast.success("ایمیل تأیید ارسال شد.");
     setSecondsLeft(COOLDOWN_SECONDS);
   };
 
@@ -81,7 +79,7 @@ export default function VerifyEmailView({ email }: { email?: string }) {
           component="h1"
           sx={{ fontWeight: 750, letterSpacing: "-0.02em" }}
         >
-          Check your inbox
+          صندوق ورودی ایمیلت رو بررسی کن
         </Typography>
 
         {email ? (
@@ -89,24 +87,23 @@ export default function VerifyEmailView({ email }: { email?: string }) {
             color="text.secondary"
             sx={{ mt: 1.5, overflowWrap: "anywhere" }}
           >
-            We sent a verification link to{" "}
+            لینک تأیید رو به این ایمیل فرستادیم:{" "}
             <Box
               component="span"
               sx={{ color: "text.primary", fontWeight: 600 }}
             >
               {email}
             </Box>
-            . Open it to finish setting up your account.
+            . لینک رو باز کن تا ساخت حسابت کامل بشه.
           </Typography>
         ) : (
           <Typography color="text.secondary" sx={{ mt: 1.5 }}>
-            Open the verification link we emailed you to finish setting up your
-            account.
+            لینک تأیید رو که به ایمیلت فرستادیم باز کن تا ساخت حسابت کامل بشه.
           </Typography>
         )}
 
         <Typography variant="body2" color="text.disabled" sx={{ mt: 1 }}>
-          Can’t find it? Check your spam folder.
+          ایمیل رو پیدا نمی‌کنی؟ پوشه اسپم رو هم بررسی کن.
         </Typography>
 
         <Stack sx={{ mt: 4, gap: 1.5, alignItems: "center" }}>
@@ -117,8 +114,8 @@ export default function VerifyEmailView({ email }: { email?: string }) {
               disabled={sending || secondsLeft > 0}
             >
               {secondsLeft > 0
-                ? `Resend email (${secondsLeft}s)`
-                : "Resend email"}
+                ? `ارسال دوباره ایمیل (${secondsLeft} ثانیه)`
+                : "ارسال دوباره ایمیل"}
             </Button>
           )}
           <Stack direction="row" sx={{ gap: 2 }}>
@@ -129,7 +126,7 @@ export default function VerifyEmailView({ email }: { email?: string }) {
               color="text.secondary"
               underline="hover"
             >
-              Use a different email
+              استفاده از ایمیل دیگه
             </MuiLink>
             <MuiLink
               component={Link}
@@ -138,7 +135,7 @@ export default function VerifyEmailView({ email }: { email?: string }) {
               color="text.secondary"
               underline="hover"
             >
-              Back to log in
+              بازگشت به ورود
             </MuiLink>
           </Stack>
         </Stack>
