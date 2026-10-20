@@ -55,7 +55,8 @@ export default function LandingView({ user }: { user?: User }) {
                 lineHeight: 1.3,
               }}
             >
-              تمام معاملاتت، دقیق و شفاف.
+              تمام معاملاتت،
+              <br /> دقیق و شفاف.
             </Typography>
 
             <Typography

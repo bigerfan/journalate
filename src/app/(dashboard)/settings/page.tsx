@@ -7,7 +7,7 @@ import { getUserSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "تنظیمات | Journalate",
-  description: "تنظیمات حساب و معاملاتت رو در Journalate مدیریت کن.",
+  description: "تنظیمات حساب و معاملات | Journalate .",
   robots: {
     index: false,
     follow: false,

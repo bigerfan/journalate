@@ -7,6 +7,7 @@ import { AppToaster } from "@/components/toast/app-toast";
 import Providers from "./providers";
 import { ProgressBar } from "@/components/progress-bar/progress-bar";
 import { CacheProvider } from "@/theme/cache-provider";
+import { estedad } from "./fonts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fa" dir="rtl">
+    <html lang="fa" dir="rtl" className={estedad.variable}>
       <body>
         <Providers>
           <CacheProvider>
