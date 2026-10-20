@@ -1,13 +1,25 @@
+import type { Metadata } from "next";
 import { Box, Card, Container, Typography } from "@mui/material";
 import { SignupForm } from "@/features/auth/components/auth-signup-form";
-import { auth, getUserSession, requireUser } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+
+export const metadata: Metadata = {
+  title: "ثبت‌نام | Journalate",
+  description:
+    "در Journalate حساب کاربری بساز و ثبت معاملات، مدیریت ریسک و بررسی عملکردت رو شروع کن.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 const Page = async () => {
   // const session = await getUserSession();
   const session = await auth.api.getSession({ headers: await headers() });
-  if (session) redirect("/dashbaord");
+  if (session) redirect("/dashboard");
+
   return (
     <Box
       sx={{
@@ -36,11 +48,11 @@ const Page = async () => {
               sx={{ fontWeight: 600 }}
               gutterBottom
             >
-              Welcome to journalate!
+              به Journalate خوش اومدی!
             </Typography>
 
             <Typography variant="body2" color="text.secondary">
-              signup and start your journal
+              ثبت‌نام کن و ثبت معاملاتت رو شروع کن.
             </Typography>
           </Box>
 
