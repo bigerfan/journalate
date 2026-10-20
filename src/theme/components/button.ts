@@ -3,7 +3,7 @@ export const MuiButton = {
     root: {
       borderRadius: "8px",
       textTransform: "uppercase",
-      fontSize: 11,
+      fontSize: 13,
       fontWeight: 400,
       letterSpacing: "0.08em",
       boxShadow: "none",

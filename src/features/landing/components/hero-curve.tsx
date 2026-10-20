@@ -178,7 +178,7 @@ export default function HeroCurve() {
         <Box
           sx={{
             position: "absolute",
-            left: `${last.x}%`,
+            left: `${100 - last.x}%`,
             top: `${last.y}%`,
             transform: "translate(-50%, -50%)",
           }}
