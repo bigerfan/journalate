@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { authClient } from "@/lib/auth-client";
 import DeleteAccountModal from "./delete-account-modal";
+import SignOutModal from "./sign-out-modal";
 
 type Props = {
   email: string;
@@ -22,6 +23,7 @@ type Props = {
 
 export default function AccountSection({ email, accountCreatedAt }: Props) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [signoutModal, setSignoutModal] = useState(false);
 
   return (
     <>
@@ -53,7 +55,7 @@ export default function AccountSection({ email, accountCreatedAt }: Props) {
               spacing: 2,
             }}
           >
-            <Stack spacing={0.5}>
+            {/* <Stack spacing={0.5}>
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                 حذف حساب کاربری
               </Typography>
@@ -61,22 +63,33 @@ export default function AccountSection({ email, accountCreatedAt }: Props) {
               <Typography variant="body2" color="text.secondary">
                 حساب کاربری و تمام اطلاعات مرتبط با آن برای همیشه حذف می‌شوند.
               </Typography>
-            </Stack>
+            </Stack> */}
 
-            <Button
+            {/* <Button
               variant="outlined"
               color="error"
               onClick={() => setDeleteModalOpen(true)}
             >
               حذف حساب کاربری
+            </Button> */}
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => setSignoutModal(true)}
+            >
+              خروج از اکانت
             </Button>
           </Stack>
         </Stack>
       </Paper>
 
-      <DeleteAccountModal
+      {/* <DeleteAccountModal
         open={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
+      /> */}
+      <SignOutModal
+        open={signoutModal}
+        onClose={() => setSignoutModal(false)}
       />
     </>
   );
