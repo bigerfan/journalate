@@ -9,6 +9,7 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { showError } from "@/components/toast/show-error";
 import { useRouter } from "next/navigation";
+import PasswordField from "@/components/fields/password-field";
 
 export function LoginForm() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export function LoginForm() {
           autoComplete="email"
         />
 
-        <TextField
+        <PasswordField
           {...field("password")}
           label="رمز عبور"
           type="password"
@@ -64,6 +65,19 @@ export function LoginForm() {
           helperText={errors.password?.message}
           autoComplete="current-password"
         />
+
+        <Link href="/auth/forgot-password">
+          <Typography
+            color="primary"
+            sx={{
+              "&:hover": {
+                color: "primary.light",
+              },
+            }}
+          >
+            رمز رو فراموش کردی؟
+          </Typography>
+        </Link>
 
         <Link href="/auth/signup">
           <Typography

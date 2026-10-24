@@ -16,6 +16,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { authClient } from "@/lib/auth-client";
 import { showError } from "@/components/toast/show-error";
+import PasswordField from "@/components/fields/password-field";
 
 type DeleteAccountModalProps = {
   open: boolean;
@@ -105,7 +106,7 @@ export default function DeleteAccountModal({
             برای همیشه حذف کنه. برای تأیید، رمز عبورت رو وارد کن.
           </DialogContentText>
 
-          <TextField
+          <PasswordField
             fullWidth
             type="password"
             label="رمز عبور"

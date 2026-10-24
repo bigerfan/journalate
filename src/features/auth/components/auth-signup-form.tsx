@@ -11,6 +11,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { showError } from "@/components/toast/show-error";
 import { useRouter } from "next/navigation";
+import PasswordField from "@/components/fields/password-field";
 
 export function SignupForm() {
   const router = useRouter();
@@ -71,7 +72,7 @@ export function SignupForm() {
           autoComplete="email"
         />
 
-        <TextField
+        <PasswordField
           {...field("password")}
           label="رمز عبور"
           type="password"
