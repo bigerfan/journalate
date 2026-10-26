@@ -291,6 +291,7 @@ export default function TradesView({
                 equity={equity}
                 onDelete={handleDeleteConfirmation}
                 onClose={setClosing}
+                onEdit={(trade) => router.push(`/trades/${trade.id}/edit`)}
               />
             ) : (
               <Box

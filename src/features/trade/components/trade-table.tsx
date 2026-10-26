@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import NextLink from "next/link";
 import {
   Box,
@@ -17,9 +17,19 @@ import {
   Tooltip,
   Typography,
   Link,
+  MenuItem,
+  Menu,
+  Stack,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { LinkOffOutlined, LinkOutlined } from "@mui/icons-material";
+import {
+  CloseOutlined,
+  Delete,
+  Edit,
+  LinkOffOutlined,
+  LinkOutlined,
+  MoreVert,
+} from "@mui/icons-material";
 
 import { rewardRisk } from "../calc";
 import {
@@ -40,6 +50,7 @@ type Props = {
   currency: string;
   equity: number;
   onDelete: (trade: Trade) => void;
+  onEdit: (trade: Trade) => void;
   onClose: (trade: Trade) => void;
 };
 
@@ -47,10 +58,10 @@ const STATUS: Record<
   TradeStatus,
   {
     label: string;
-    color: "info" | "warning" | "default";
+    color: "primary" | "warning" | "default";
   }
 > = {
-  open: { label: "باز", color: "info" },
+  open: { label: "باز", color: "primary" },
   partial: { label: "بخشی بسته‌شده", color: "warning" },
   closed: { label: "بسته‌شده", color: "default" },
 };
@@ -61,6 +72,7 @@ export default function TradeTable({
   currency,
   equity,
   onDelete,
+  onEdit,
   onClose,
 }: Props) {
   const money = useMemo(
@@ -84,6 +96,22 @@ export default function TradeTable({
       }),
     [],
   );
+
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    trade: Trade,
+  ) => {
+    setMenuAnchor(event.currentTarget);
+    setSelectedTrade(trade);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+    setSelectedTrade(null);
+  };
 
   if (trades.length === 0) {
     return (
@@ -217,7 +245,6 @@ export default function TradeTable({
                     {date.format(new Date(t.openedAt))}
                   </Typography>
                 </TableCell>
-
                 <TableCell>
                   <Link
                     component={NextLink}
@@ -229,21 +256,17 @@ export default function TradeTable({
                     <StackPair pair={t.pair} side={t.side} />
                   </Link>
                 </TableCell>
-
                 <TableCell align="right">{price.format(t.entry)}</TableCell>
-
                 <TableCell align="right">
                   <Typography variant="body2" color="error.main">
                     {price.format(t.stop)}
                   </Typography>
                 </TableCell>
-
                 <TableCell align="right">
                   <Typography variant="body2" color="success.main">
                     {t.target !== undefined ? price.format(t.target) : "—"}
                   </Typography>
                 </TableCell>
-
                 <TableCell align="right">
                   {status === "closed"
                     ? "—"
@@ -260,7 +283,6 @@ export default function TradeTable({
                     </Typography>
                   )}
                 </TableCell>
-
                 <TableCell align="right">
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {money.format(t.riskAmount)}
@@ -276,13 +298,11 @@ export default function TradeTable({
                     </Typography>
                   )}
                 </TableCell>
-
                 <TableCell align="right">
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {rr !== null ? `${rr.toFixed(2)}R` : "—"}
                   </Typography>
                 </TableCell>
-
                 <TableCell align="right">
                   {pnl === null ? (
                     <Typography variant="body2" color="text.secondary">
@@ -308,7 +328,6 @@ export default function TradeTable({
                     </Box>
                   )}
                 </TableCell>
-
                 <TableCell>
                   <Typography
                     variant="body2"
@@ -319,7 +338,6 @@ export default function TradeTable({
                     {t.strategy ?? "—"}
                   </Typography>
                 </TableCell>
-
                 <TableCell align="center">
                   {t.imageUrl ? (
                     <Tooltip title="باز کردن تصویر معامله">
@@ -348,7 +366,6 @@ export default function TradeTable({
                     </Tooltip>
                   )}
                 </TableCell>
-
                 <TableCell>
                   <Chip
                     size="small"
@@ -364,52 +381,123 @@ export default function TradeTable({
                     }}
                   />
                 </TableCell>
-
                 <TableCell align="right">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      gap: 0.5,
-                    }}
-                  >
-                    <Button
-                      size="small"
-                      disabled={status === "closed"}
-                      onClick={() => onClose(t)}
+                  <Tooltip title="Trade actions">
+                    <IconButton
+                      aria-label={`Actions for ${t.pair}`}
+                      aria-haspopup="menu"
+                      aria-expanded={
+                        menuAnchor !== null && selectedTrade?.id === t.id
+                      }
+                      onClick={(event) => handleMenuOpen(event, t)}
                       sx={{
-                        textTransform: "none",
-                        fontWeight: 650,
-                        borderRadius: 1.5,
+                        width: 36,
+                        height: 36,
+                        color: "text.secondary",
+                        "&:hover": {
+                          bgcolor: "action.hover",
+                          color: "text.primary",
+                        },
                       }}
                     >
-                      بستن
-                    </Button>
-
-                    <Tooltip title="حذف معامله">
-                      <IconButton
-                        size="small"
-                        aria-label={`حذف معامله ${t.pair}`}
-                        onClick={() => onDelete(t)}
-                        sx={{
-                          color: "text.secondary",
-                          "&:hover": {
-                            color: "error.main",
-                            // bgcolor: "action.hover",
-                          },
-                        }}
-                      >
-                        <DeleteOutlineIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
+                      <MoreVert fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             );
           })}
         </TableBody>
       </Table>
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor && selectedTrade)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              minWidth: 150,
+              border: 1,
+              borderColor: "divider",
+              borderRadius: 2,
+              boxShadow: 3,
+            },
+          },
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            if (selectedTrade) onEdit(selectedTrade);
+            handleMenuClose();
+          }}
+          sx={{ gap: 1.5, py: 1 }}
+        >
+          <Stack
+            sx={{
+              width: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography>ویرایش</Typography>
+            <Edit />
+          </Stack>
+        </MenuItem>
+
+        <MenuItem
+          disabled={
+            !selectedTrade ||
+            statusOf(closesByTrade.get(selectedTrade.id) ?? []) === "closed"
+          }
+          onClick={() => {
+            if (selectedTrade) onClose(selectedTrade);
+            handleMenuClose();
+          }}
+          sx={{ gap: 1.5, py: 1 }}
+        >
+          <Stack
+            sx={{
+              width: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography>بستن</Typography>
+            <CloseOutlined />
+          </Stack>
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            if (selectedTrade) onDelete(selectedTrade);
+            handleMenuClose();
+          }}
+          sx={{
+            gap: 1.5,
+            py: 1,
+            color: "error.main",
+          }}
+        >
+          <Stack
+            sx={{
+              width: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography>حذف</Typography>
+            <Delete />
+          </Stack>
+        </MenuItem>
+      </Menu>
     </TableContainer>
   );
 }
