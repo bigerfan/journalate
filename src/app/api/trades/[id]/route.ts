@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { route } from "@/lib/http";
-import { IdSchema } from "@/features/trade/server/schema";
-import { deleteTrade } from "@/features/trade/server/service";
+import { CreateTradeSchema, IdSchema } from "@/features/trade/server/schema";
+import { deleteTrade, updateTrade } from "@/features/trade/server/service";
 import { authedRoute } from "@/lib/auth";
+import { Trade } from "@/features/trade/types";
 
 type Ctx = { params: Promise<{ id: string }> }; // params is a Promise in Next 15+
 
@@ -13,3 +14,11 @@ export const DELETE = authedRoute(
     return new NextResponse(null, { status: 204 });
   },
 );
+
+export const PUT = authedRoute(async (user, req: Request, { params }: Ctx) => {
+  const { id } = IdSchema.parse(await params);
+  const input = CreateTradeSchema.parse(await req.json());
+
+  await updateTrade(user, id, input);
+  return new NextResponse(null, { status: 204 });
+});

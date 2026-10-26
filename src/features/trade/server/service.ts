@@ -31,6 +31,60 @@ export async function createTrade(user: SessionUser, input: CreateTradeInput) {
   return toTrade(row);
 }
 
+export async function updateTrade(
+  user: SessionUser,
+  id: string,
+  input: CreateTradeInput,
+) {
+  return prisma.$transaction(async (tx) => {
+    // The same row lock your close flow takes. Copy it from there instead of trusting mine:
+    // table name and the uuid cast depend on your schema (@@map, @db.Uuid).
+    await tx.$queryRaw`SELECT id FROM trades WHERE id = ${id}::uuid FOR UPDATE`;
+    const existing = await tx.trade.findFirst({
+      where: { id, userId: user.id },
+      include: { closes: { select: { closedAt: true } } },
+    });
+    if (!existing) throw new HttpError(404, "معامله پیدا نشد.");
+
+    if (existing.closes.length > 0 && input.side !== existing.side) {
+      throw new HttpError(409, "بعد از بستن معامله نمیشه ساید رو تغییر داد");
+    }
+
+    const firstClose = existing.closes.reduce<Date | null>(
+      (min, c) => (min === null || c.closedAt < min ? c.closedAt : min),
+      null,
+    );
+    if (firstClose && new Date(input.openedAt) > firstClose) {
+      throw new HttpError(
+        409,
+        "زمان بازشدن معامله نمیتونه از اولین کلوز زودتر باشه",
+      );
+    }
+
+    const row = await tx.trade.update({
+      where: { id, userId: user.id }, // belt and braces on top of the lock
+      data: {
+        pair: input.pair,
+        side: input.side,
+        entry: input.entry,
+        stop: input.stop,
+        size: input.size,
+        riskPct: input.riskPct,
+        fees: input.fees,
+        openedAt: new Date(input.openedAt),
+        riskAmount: input.size * Math.abs(input.entry - input.stop), // never from the client
+        // Optional fields: null clears them. `undefined` means "leave unchanged" in Prisma.
+        target: input.target ?? null,
+        strategy: input.strategy ?? null,
+        timeframe: input.timeframe ?? null,
+        notes: input.notes ?? null,
+        imageUrl: input.imageUrl ?? null,
+      },
+    });
+    return toTrade(row);
+  });
+}
+
 export async function deleteTrade(user: SessionUser, id: string) {
   const { count } = await prisma.trade.deleteMany({
     where: { id, userId: user.id },

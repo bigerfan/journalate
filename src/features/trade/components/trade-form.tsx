@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Controller, RegisterOptions, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -21,23 +22,37 @@ import { makeTradeFormSchema, type TradeFormValues } from "../schema";
 import type { Currency, Settings } from "@/features/settings/schema";
 import { riskAmount, rewardRisk, suggestedSize } from "../calc";
 import { tradeRepo } from "../repo";
-import { getCurrencyFormatter, localNow } from "@/lib/format";
+import type { Trade } from "../types";
+import { getCurrencyFormatter, localNow, toLocalInput } from "@/lib/format";
 import { makeFieldProps } from "@/lib/form";
 
 const isNum = (n: unknown): n is number =>
   typeof n === "number" && Number.isFinite(n);
 
+type Props = {
+  settings: Settings;
+  equity?: number; // create mode only
+  trade?: Trade; // present = edit mode
+  hasCloses?: boolean; // edit mode: locks `side`
+};
+
 export default function TradeForm({
   settings,
-  equity,
-}: {
-  settings: Settings;
-  equity: number;
-}) {
+  equity = 0,
+  trade,
+  hasCloses = false,
+}: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const isEdit = Boolean(trade);
+
+  // Edit mode has no max-risk cap (agreed rule: it would compare an old trade to today's rules).
   const schema = useMemo(
-    () => makeTradeFormSchema(settings.maxRiskPct),
-    [settings.maxRiskPct],
+    () =>
+      makeTradeFormSchema(
+        isEdit ? Number.POSITIVE_INFINITY : settings.maxRiskPct,
+      ),
+    [isEdit, settings.maxRiskPct],
   );
   const money = useMemo(
     () =>
@@ -52,16 +67,33 @@ export default function TradeForm({
     control,
     watch,
     setValue,
+    setError,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<TradeFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      side: "long",
-      riskPct: settings.maxRiskPct,
-      openedAt: localNow(),
-      fees: 0,
-    },
+    defaultValues: trade
+      ? {
+          pair: trade.pair,
+          side: trade.side,
+          entry: trade.entry,
+          stop: trade.stop,
+          target: trade.target,
+          size: trade.size,
+          riskPct: trade.riskPct,
+          fees: trade.fees,
+          strategy: trade.strategy ?? "",
+          timeframe: trade.timeframe ?? "",
+          notes: trade.notes ?? "",
+          imageUrl: trade.imageUrl ?? "",
+          openedAt: toLocalInput(trade.openedAt),
+        }
+      : {
+          side: "long",
+          riskPct: settings.maxRiskPct,
+          openedAt: localNow(),
+          fees: 0,
+        },
   });
 
   const [side, entry, stop, target, size, riskPct] = watch([
@@ -83,8 +115,8 @@ export default function TradeForm({
   const field = makeFieldProps(register, errors);
 
   const onSubmit = async (v: TradeFormValues) => {
-    console.log(v);
-    await tradeRepo.create({
+    // Edit is a full replacement (PUT): a field left empty here is cleared on the server.
+    const payload = {
       pair: v.pair.trim().toUpperCase(),
       side: v.side,
       entry: v.entry,
@@ -92,15 +124,32 @@ export default function TradeForm({
       target: v.target,
       size: v.size,
       riskPct: v.riskPct,
-      imageUrl: v.imageUrl,
+      imageUrl: v.imageUrl?.trim() || undefined,
       riskAmount: riskAmount(v.size, v.entry, v.stop),
       fees: v.fees ?? 0,
       strategy: v.strategy?.trim() || undefined,
       timeframe: v.timeframe?.trim() || undefined,
       notes: v.notes?.trim() || undefined,
       openedAt: new Date(v.openedAt).toISOString(),
-    });
-    router.push("/trades");
+    };
+
+    try {
+      if (trade) {
+        await tradeRepo.update(trade.id, payload);
+        await queryClient.invalidateQueries({ queryKey: ["trades"] });
+        router.push(`/trades/${trade.id}`);
+        router.refresh(); // the detail page is server-rendered
+      } else {
+        await tradeRepo.create(payload);
+        router.push("/trades");
+      }
+    } catch (e) {
+      // Form-related server errors are shown inline (project convention), not as a toast.
+      setError("root.server", {
+        message:
+          e instanceof Error ? e.message : "خطایی رخ داد. دوباره تلاش کن.",
+      });
+    }
   };
 
   return (
@@ -117,11 +166,15 @@ export default function TradeForm({
     >
       {/* ---------- Inputs ---------- */}
       <Stack spacing={3}>
+        {errors.root?.server && (
+          <Alert severity="error">{errors.root.server.message}</Alert>
+        )}
+
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <TextField
             label="جفت‌ارز"
             placeholder="BTCUSDT"
-            autoFocus
+            autoFocus={!isEdit}
             fullWidth
             {...field("pair")}
           />
@@ -131,6 +184,7 @@ export default function TradeForm({
             render={({ field }) => (
               <ToggleButtonGroup
                 exclusive
+                disabled={hasCloses}
                 value={field.value}
                 onChange={(_, v) => v && field.onChange(v)}
                 aria-label="جهت معامله"
@@ -146,6 +200,15 @@ export default function TradeForm({
             )}
           />
         </Stack>
+        {hasCloses && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: "-16px !important" }}
+          >
+            چون برای این معامله کلوز ثبت شده، جهت معامله قابل تغییر نیست.
+          </Typography>
+        )}
 
         <Box
           sx={{
@@ -176,24 +239,27 @@ export default function TradeForm({
               fullWidth
               {...field("size", "number")}
             />
-            <Button
-              size="small"
-              disabled={suggested <= 0}
-              onClick={() =>
-                setValue("size", Number(suggested.toPrecision(6)), {
-                  shouldValidate: true,
-                })
-              }
-              sx={{ mt: 0.5 }}
-            >
-              {suggested > 0
-                ? `استفاده از حجم پیشنهادی: ${Number(suggested.toPrecision(6))}`
-                : "برای محاسبه حجم پیشنهادی، قیمت ورود و حد ضرر رو وارد کن"}
-            </Button>
+            {/* Needs today's equity, which says nothing about an old trade: create mode only. */}
+            {!isEdit && (
+              <Button
+                size="small"
+                disabled={suggested <= 0}
+                onClick={() =>
+                  setValue("size", Number(suggested.toPrecision(6)), {
+                    shouldValidate: true,
+                  })
+                }
+                sx={{ mt: 0.5 }}
+              >
+                {suggested > 0
+                  ? `استفاده از حجم پیشنهادی: ${Number(suggested.toPrecision(6))}`
+                  : "برای محاسبه حجم پیشنهادی، قیمت ورود و حد ضرر رو وارد کن"}
+              </Button>
+            )}
           </Box>
         </Box>
 
-        {overRisk && (
+        {!isEdit && overRisk && (
           <Alert severity="warning">
             با این حجم، {plannedRiskPct.toFixed(2)}٪ از موجودیت در معرض ریسکه؛
             این مقدار از ریسک برنامه‌ریزی‌شده یعنی {riskPct}٪ بیشتره.
@@ -263,16 +329,18 @@ export default function TradeForm({
           خلاصه معامله
         </Typography>
         <Stack spacing={1.5} sx={{ my: 2 }}>
-          <Row label="موجودی حساب" value={money.format(equity)} />
+          {!isEdit && <Row label="موجودی حساب" value={money.format(equity)} />}
           <Row
             label="مقدار در معرض ریسک"
             value={plannedRisk > 0 ? money.format(plannedRisk) : "—"}
           />
-          <Row
-            label="درصد ریسک از موجودی"
-            value={plannedRisk > 0 ? `${plannedRiskPct.toFixed(2)}٪` : "—"}
-            warn={overRisk}
-          />
+          {!isEdit && (
+            <Row
+              label="درصد ریسک از موجودی"
+              value={plannedRisk > 0 ? `${plannedRiskPct.toFixed(2)}٪` : "—"}
+              warn={overRisk}
+            />
+          )}
           <Row
             label="ارزش معامله"
             value={
@@ -291,7 +359,13 @@ export default function TradeForm({
           fullWidth
           disabled={isSubmitting}
         >
-          {isSubmitting ? "در حال ثبت..." : "ثبت معامله"}
+          {isSubmitting
+            ? isEdit
+              ? "در حال ذخیره..."
+              : "در حال ثبت..."
+            : isEdit
+              ? "ذخیره تغییرات"
+              : "ثبت معامله"}
         </Button>
       </Paper>
     </Box>

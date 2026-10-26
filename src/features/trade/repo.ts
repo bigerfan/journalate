@@ -6,6 +6,11 @@ export const tradeRepo = {
   list: () => api<Trade[]>("/api/trades"),
   create: (input: NewTrade) =>
     api<Trade>("/api/trades", { method: "POST", body: JSON.stringify(input) }),
+  update: (id: string, input: NewTrade) =>
+    api<Trade>(`/api/trades/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(input),
+    }),
   remove: (id: string) => api<void>(`/api/trades/${id}`, { method: "DELETE" }),
 };
 

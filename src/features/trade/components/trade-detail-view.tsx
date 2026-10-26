@@ -101,6 +101,7 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
     <Container maxWidth="xl" sx={{ py: { xs: 3, md: 5 } }}>
       <Stack spacing={3}>
         {/* Navigation */}
+
         <Box>
           <MuiLink
             component={Link}
@@ -165,6 +166,14 @@ export default function TradeDetailView({ trade, closes, currency }: Props) {
                 تاریخ ورود: {when.format(new Date(trade.openedAt))}
                 {trade.strategy ? ` · ${trade.strategy}` : ""}
               </Typography>
+              <Button
+                variant="contained"
+                sx={{ mt: 2 }}
+                href={`/trades/${trade.id}/edit`}
+                LinkComponent={Link}
+              >
+                ویرایش
+              </Button>
             </Box>
           </Stack>
         </Box>
