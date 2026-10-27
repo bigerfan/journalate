@@ -108,7 +108,7 @@ export async function createClose(
   const row = await prisma.$transaction(async (tx) => {
     // Lock the trade row so two simultaneous closes can't both pass the 100% check.
     const locked = await tx.$queryRaw<{ opened_at: Date }[]>`
-      SELECT opened_at FROM trades WHERE id = ${tradeId}::uuid FOR UPDATE`;
+      SELECT opened_at FROM trades WHERE id = ${tradeId}::uuid AND user_id = ${user.id} FOR UPDATE`;
     if (!locked[0]) throw new HttpError(404, "معامله پیدا نشد.");
     if (input.closedAt < locked[0].opened_at)
       throw new HttpError(
