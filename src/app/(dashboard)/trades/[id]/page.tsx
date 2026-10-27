@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { getSettings } from "@/features/settings/server/service";
-import TradeDetailView from "@/features/trade/components/trade-detail-view";
+import TradeDetailView from "@/features/trade/components/view/trade-detail-view";
 import { getTradeWithCloses } from "@/features/trade/server/service";
 import { getUserSession } from "@/lib/auth";
 

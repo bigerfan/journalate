@@ -132,6 +132,15 @@ export async function createClose(
   return toClose(row);
 }
 
+// service.ts
+export async function deleteClose(user: SessionUser, id: string) {
+  const { id: closeId } = await prisma.close.delete({
+    where: { id, userId: user.id },
+  });
+
+  if (closeId == undefined) throw new HttpError(404, "کلوز پیدا نشد.");
+}
+
 export async function getTradeWithCloses(user: SessionUser, id: string) {
   const row = await prisma.trade.findFirst({
     where: { id, userId: user.id }, // the ownership filter, as in every other service

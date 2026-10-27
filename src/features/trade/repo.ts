@@ -21,4 +21,5 @@ export const closeRepo = {
       method: "POST",
       body: JSON.stringify(input),
     }),
+  remove: (id: string) => api<void>(`/api/closes/${id}`, { method: "DELETE" }),
 };

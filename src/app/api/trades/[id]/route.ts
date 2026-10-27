@@ -5,7 +5,7 @@ import { deleteTrade, updateTrade } from "@/features/trade/server/service";
 import { authedRoute } from "@/lib/auth";
 import { Trade } from "@/features/trade/types";
 
-type Ctx = { params: Promise<{ id: string }> }; // params is a Promise in Next 15+
+export type Ctx = { params: Promise<{ id: string }> };
 
 export const DELETE = authedRoute(
   async (user, _req: Request, { params }: Ctx) => {
